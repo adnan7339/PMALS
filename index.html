@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sehat Kahani - Tele Health Progress Report</title>
+    <title>Sehat Kahani - Tele Health Progress Report (SheetDB)</title>
     <style>
         * {
             margin: 0;
@@ -135,6 +135,11 @@
             box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
         }
 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         #reportContent {
             padding: 30px;
             background: white;
@@ -201,6 +206,10 @@
             background: #d4edda;
             font-weight: 600;
             color: #155724;
+        }
+
+        .modified {
+            background: #ffe5b4 !important;
         }
 
         .summary {
@@ -322,6 +331,10 @@
             color: #666;
         }
 
+        .loading.active {
+            display: block;
+        }
+
         select {
             padding: 10px;
             border: 2px solid #ddd;
@@ -334,14 +347,7 @@
             /* Column that won't be exported */
         }
 
-        @media print {
-            .controls, .no-export {
-                display: none !important;
-            }
-        }
-
-        /* Google Sheets Status */
-        .sheets-status {
+        .api-status {
             padding: 10px 20px;
             background: #e8f5e9;
             border-left: 4px solid #4CAF50;
@@ -350,14 +356,48 @@
             font-size: 14px;
         }
 
-        .sheets-status.error {
+        .api-status.error {
             background: #ffebee;
             border-left-color: #f44336;
         }
 
-        .sheets-status.warning {
+        .api-status.warning {
             background: #fff3e0;
             border-left-color: #ff9800;
+        }
+
+        .api-status.info {
+            background: #e3f2fd;
+            border-left-color: #2196F3;
+        }
+
+        .sync-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .sync-indicator.syncing {
+            background: #ff9800;
+        }
+
+        .sync-indicator.error {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media print {
+            .controls, .no-export, .api-status {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -366,17 +406,17 @@
         <div class="header">
             <h1>🏥 Sehat Kahani - Tele Health Progress Report</h1>
             <div class="date-display" id="currentDate"></div>
+            <div style="margin-top: 10px; font-size: 14px;">
+                🔄 Live Sync with SheetDB <span class="sync-indicator" id="syncIndicator"></span>
+            </div>
         </div>
 
         <div class="controls">
-            <button class="btn btn-success" onclick="loadFromGoogleSheets()">
-                📊 Load from Google Sheets
+            <button class="btn btn-success" onclick="loadFromSheetDB()" id="loadBtn">
+                🔄 Refresh from Sheet
             </button>
-            <button class="btn btn-success" onclick="saveToGoogleSheets()">
-                💾 Save to Google Sheets
-            </button>
-            <button class="btn btn-primary" onclick="saveData()">
-                💾 Save Locally
+            <button class="btn btn-primary" onclick="saveToSheetDB()" id="saveBtn">
+                💾 Save All Changes
             </button>
             <button class="btn btn-secondary" onclick="exportToExcel()">
                 📥 Export Excel
@@ -393,22 +433,19 @@
             <button class="btn btn-info" onclick="openAddRowModal()">
                 ➕ Add Employee
             </button>
-            <button class="btn btn-info" onclick="openGoogleDriveModal()">
-                ⚙️ Configure Google Sheet
-            </button>
             <select id="branchFilter" onchange="filterByBranch()">
                 <option value="all">All Branches</option>
             </select>
-            <button class="btn btn-danger" onclick="resetData()">
-                🔄 Reset
+            <button class="btn btn-info" onclick="openApiConfigModal()">
+                ⚙️ API Settings
             </button>
         </div>
 
-        <div id="sheetsStatus" class="sheets-status" style="display:none;"></div>
+        <div id="apiStatus" class="api-status" style="display:none;"></div>
 
         <div id="reportContent">
             <div class="loading" id="loadingIndicator">
-                ⏳ Loading data...
+                ⏳ Loading data from SheetDB...
             </div>
             
             <div class="table-container">
@@ -486,20 +523,20 @@
         </div>
     </div>
 
-    <!-- Google Drive Configuration Modal -->
-    <div id="googleDriveModal" class="modal">
+    <!-- API Configuration Modal -->
+    <div id="apiConfigModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('googleDriveModal')">&times;</span>
-            <h2>⚙️ Configure Google Sheets</h2>
+            <span class="close" onclick="closeModal('apiConfigModal')">&times;</span>
+            <h2>⚙️ SheetDB API Configuration</h2>
             <div class="form-group">
-                <label>Google Sheet ID:</label>
-                <input type="text" id="googleSheetId" value="1lzZT5wK014u2CTZlEMIiE9UUa3NE-mXR" placeholder="Enter Google Sheet ID">
+                <label>SheetDB API URL:</label>
+                <input type="text" id="apiUrl" value="https://sheetdb.io/api/v1/v4bvfipfqutsh" placeholder="Enter SheetDB API URL">
                 <p style="font-size: 12px; color: #666; margin-top: 10px;">
-                    Copy the ID from your Google Sheets URL:<br>
-                    <code>https://docs.google.com/spreadsheets/d/<strong>[THIS_IS_THE_ID]</strong>/edit</code>
+                    Your API endpoint from SheetDB.io dashboard
                 </p>
             </div>
-            <button class="btn btn-success" onclick="updateGoogleSheetId()">Save Configuration</button>
+            <button class="btn btn-success" onclick="updateApiUrl()">Save Configuration</button>
+            <button class="btn btn-secondary" onclick="testApiConnection()" style="margin-left: 10px;">Test Connection</button>
         </div>
     </div>
 
@@ -511,43 +548,14 @@
         // =====================================================
         
         const CONFIG = {
-            GOOGLE_SHEET_ID: localStorage.getItem('googleSheetId') || '1lzZT5wK014u2CTZlEMIiE9UUa3NE-mXR',
-            SHEET_NAME: 'Sheet1' // Default sheet name
+            SHEETDB_API_URL: localStorage.getItem('sheetdbApiUrl') || 'https://sheetdb.io/api/v1/v4bvfipfqutsh',
+            AUTO_SAVE: false, // Set to true for auto-save on every change
+            AUTO_REFRESH_INTERVAL: 30000 // Refresh every 30 seconds (optional)
         };
 
-        // =====================================================
-        // DATA FROM EXCEL FILE
-        // =====================================================
-        
-        const INITIAL_DATA = [
-            {"srNo": 1, "branch": "Mianwali-1", "staffName": "Muhammad Sijad", "designation": "Assistant Branch Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 2, "branch": "Mianwali-1", "staffName": "Zafar Iqbal", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 3, "branch": "Mianwali-1", "staffName": "Karam Elahi", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 4, "branch": "Mianwali-1", "staffName": "Shahid Abbas", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 5, "branch": "Mianwali-1", "staffName": "Nadeem Abbas", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 6, "branch": "Mianwali-1", "staffName": "Arslan Haider", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 7, "branch": "Mianwali-2", "staffName": "Javed Iqbal", "designation": "Assistant Branch Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 8, "branch": "Mianwali-2", "staffName": "Ashfaq Hussain", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 9, "branch": "Mianwali-2", "staffName": "Naveed Anwar", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 10, "branch": "Mianwali-2", "staffName": "Muhammad Arshad", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 11, "branch": "Mianwali-2", "staffName": "Atif Ahmed", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 12, "branch": "Mianwali-2", "staffName": "Jawad Chohan", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 13, "branch": "Piplan", "staffName": "Muhammad Faryad", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 14, "branch": "Piplan", "staffName": "Umair Khizar", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 15, "branch": "Piplan", "staffName": "Kashif Masood", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 16, "branch": "Piplan", "staffName": "Ali Raza", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 17, "branch": "Piplan", "staffName": "Muhammad Akram", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 18, "branch": "Piplan", "staffName": "Muhammad Sabih", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 19, "branch": "Essa Khail", "staffName": "Imran Elahi", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 20, "branch": "Essa Khail", "staffName": "Asad Latif", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 21, "branch": "Essa Khail", "staffName": "Yaqoob Shahzad", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 22, "branch": "Essa Khail", "staffName": "Waqas Shahzad", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 23, "branch": "Essa Khail", "staffName": "Shamraiz Hassan", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 24, "branch": "Essa Khail", "staffName": "Shahbaz Aslam", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
-            {"srNo": 25, "branch": "Essa Khail", "staffName": "Muhammad Tahir", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0}
-        ];
-
         let tableData = [];
+        let modifiedRows = new Set(); // Track which rows have been modified
+        let originalData = {}; // Store original values for comparison
 
         // =====================================================
         // INITIALIZATION
@@ -564,212 +572,274 @@
                     day: 'numeric' 
                 });
 
-            // Load data
-            const savedData = localStorage.getItem('telehealthData');
-            if (savedData) {
-                tableData = JSON.parse(savedData);
-            } else {
-                tableData = [...INITIAL_DATA];
+            // Load API URL from storage
+            const savedApiUrl = localStorage.getItem('sheetdbApiUrl');
+            if (savedApiUrl) {
+                document.getElementById('apiUrl').value = savedApiUrl;
             }
 
-            renderTable();
-            updateSummary();
-            populateBranchFilter();
+            // Auto-load data from SheetDB
+            loadFromSheetDB();
 
-            // Load saved Google Sheet ID
-            const savedSheetId = localStorage.getItem('googleSheetId');
-            if (savedSheetId) {
-                document.getElementById('googleSheetId').value = savedSheetId;
-            }
-        }
-
-        // =====================================================
-        // GOOGLE SHEETS INTEGRATION
-        // =====================================================
-
-        function updateGoogleSheetId() {
-            const sheetId = document.getElementById('googleSheetId').value.trim();
-            if (sheetId) {
-                CONFIG.GOOGLE_SHEET_ID = sheetId;
-                localStorage.setItem('googleSheetId', sheetId);
-                showToast('✅ Google Sheet ID updated!');
-                closeModal('googleDriveModal');
-            } else {
-                showToast('❌ Please enter a valid Sheet ID');
-            }
-        }
-
-        async function loadFromGoogleSheets() {
-            showSheetsStatus('Loading from Google Sheets...', 'warning');
-            
-            try {
-                // Construct the CSV export URL
-                const csvUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.GOOGLE_SHEET_ID}/export?format=csv&gid=0`;
-                
-                showToast('📥 Fetching data from Google Sheets...');
-                
-                const response = await fetch(csvUrl);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch Google Sheets. Make sure the sheet is shared as "Anyone with the link can view"');
-                }
-                
-                const csvText = await response.text();
-                const rows = parseCSV(csvText);
-                
-                if (rows.length < 3) {
-                    throw new Error('Sheet appears to be empty or has invalid format');
-                }
-                
-                // Parse the data (skip header rows)
-                const newData = [];
-                for (let i = 2; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (!row[0] || row[0] === 'Total' || row[0] === '') continue;
-                    
-                    try {
-                        const record = {
-                            srNo: parseInt(row[0]) || i - 1,
-                            branch: row[1] || '',
-                            staffName: row[2] || '',
-                            designation: row[3] || '',
-                            reSubscriber: parseInt(row[4]) || 0,
-                            newOnboarding: parseInt(row[5]) || 0,
-                            openingBalance: parseInt(row[7]) || 0,
-                            todayReceived: parseInt(row[8]) || 0,
-                            todayDeposit: parseInt(row[9]) || 0
-                        };
-                        newData.push(record);
-                    } catch (e) {
-                        console.warn('Skipping row', i, ':', e);
+            // Optional: Auto-refresh
+            if (CONFIG.AUTO_REFRESH_INTERVAL > 0) {
+                setInterval(() => {
+                    if (modifiedRows.size === 0) {
+                        loadFromSheetDB(true); // Silent refresh
                     }
+                }, CONFIG.AUTO_REFRESH_INTERVAL);
+            }
+        }
+
+        // =====================================================
+        // SHEETDB API INTEGRATION
+        // =====================================================
+
+        async function loadFromSheetDB(silent = false) {
+            if (!silent) {
+                showLoading(true);
+                showApiStatus('Loading data from SheetDB...', 'info');
+            }
+            setSyncIndicator('syncing');
+
+            const loadBtn = document.getElementById('loadBtn');
+            loadBtn.disabled = true;
+
+            try {
+                const response = await fetch(CONFIG.SHEETDB_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
                 }
+
+                const data = await response.json();
                 
-                if (newData.length === 0) {
-                    throw new Error('No valid data found in the sheet');
+                if (!Array.isArray(data)) {
+                    throw new Error('Invalid data format received from API');
                 }
-                
-                tableData = newData;
+
+                // Parse the data
+                tableData = data.map((row, index) => {
+                    const record = {
+                        srNo: parseInt(row['Sr.No'] || row.srNo || index + 1) || index + 1,
+                        branch: String(row['Branch'] || row.branch || '').trim(),
+                        staffName: String(row['Staff name (E code optional)'] || row['Staff Name'] || row.staffName || '').trim(),
+                        designation: String(row['Designation'] || row.designation || '').trim(),
+                        reSubscriber: parseInt(row['Re-subscriber'] || row.reSubscriber || 0) || 0,
+                        newOnboarding: parseInt(row['New Onboarding'] || row.newOnboarding || 0) || 0,
+                        openingBalance: parseInt(row['Opening Balance'] || row.openingBalance || 0) || 0,
+                        todayReceived: parseInt(row['Today Received'] || row.todayReceived || 0) || 0,
+                        todayDeposit: parseInt(row['Today Deposit'] || row.todayDeposit || 0) || 0,
+                        _id: row.id || row._id || null // Store SheetDB row ID for updates
+                    };
+                    
+                    // Store original data for comparison
+                    originalData[index] = JSON.stringify(record);
+                    
+                    return record;
+                }).filter(row => row.branch || row.staffName); // Filter out empty rows
+
+                if (tableData.length === 0) {
+                    throw new Error('No data found in the sheet');
+                }
+
+                modifiedRows.clear(); // Clear modified rows on fresh load
                 renderTable();
                 updateSummary();
                 populateBranchFilter();
-                saveData();
-                
-                showSheetsStatus(`✅ Successfully loaded ${newData.length} records from Google Sheets`, 'success');
-                showToast(`✅ Loaded ${newData.length} records from Google Sheets!`);
-                
-            } catch (error) {
-                console.error('Error loading from Google Sheets:', error);
-                showSheetsStatus('❌ Error: ' + error.message, 'error');
-                showToast('❌ Error: ' + error.message);
-            }
-        }
 
-        async function saveToGoogleSheets() {
-            showSheetsStatus('Saving to Google Sheets requires Google Apps Script...', 'warning');
-            showToast('⚠️ Direct save requires Google Apps Script setup');
-            
-            // Show instructions
-            const instructions = `
-To enable saving to Google Sheets:
-
-1. Open your Google Sheet: 
-   https://docs.google.com/spreadsheets/d/${CONFIG.GOOGLE_SHEET_ID}/edit
-
-2. Go to Extensions → Apps Script
-
-3. Replace all code with the following:
-
-function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSheet();
-  var data = JSON.parse(e.postData.contents);
-  
-  // Clear existing data (keep headers)
-  var lastRow = sheet.getLastRow();
-  if (lastRow > 2) {
-    sheet.getRange(3, 1, lastRow - 2, 11).clearContent();
-  }
-  
-  // Write new data
-  data.forEach(function(row, index) {
-    sheet.getRange(index + 3, 1, 1, 11).setValues([[
-      row.srNo, row.branch, row.staffName, row.designation,
-      row.reSubscriber, row.newOnboarding, 
-      row.reSubscriber + row.newOnboarding,
-      row.openingBalance, row.todayReceived, row.todayDeposit,
-      row.openingBalance + row.todayReceived - row.todayDeposit
-    ]]);
-  });
-  
-  return ContentService.createTextOutput(JSON.stringify({success: true}))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-4. Click "Deploy" → "New deployment"
-5. Select "Web app"
-6. Set "Execute as: Me"
-7. Set "Who has access: Anyone"
-8. Click "Deploy" and copy the Web App URL
-9. Update CONFIG.APPS_SCRIPT_URL with your URL
-
-For now, use "Export Excel" to save your changes!
-            `;
-            
-            alert(instructions);
-        }
-
-        function parseCSV(text) {
-            const rows = [];
-            let currentRow = [];
-            let currentCell = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                const nextChar = text[i + 1];
-                
-                if (char === '"') {
-                    if (inQuotes && nextChar === '"') {
-                        currentCell += '"';
-                        i++;
-                    } else {
-                        inQuotes = !inQuotes;
-                    }
-                } else if (char === ',' && !inQuotes) {
-                    currentRow.push(currentCell.trim());
-                    currentCell = '';
-                } else if ((char === '\n' || char === '\r') && !inQuotes) {
-                    if (currentCell || currentRow.length > 0) {
-                        currentRow.push(currentCell.trim());
-                        rows.push(currentRow);
-                        currentRow = [];
-                        currentCell = '';
-                    }
-                    if (char === '\r' && nextChar === '\n') {
-                        i++;
-                    }
-                } else {
-                    currentCell += char;
+                if (!silent) {
+                    showApiStatus(`✅ Successfully loaded ${tableData.length} records from SheetDB`, 'success');
+                    showToast(`✅ Loaded ${tableData.length} records!`);
                 }
+                setSyncIndicator('success');
+
+            } catch (error) {
+                console.error('Error loading from SheetDB:', error);
+                showApiStatus('❌ Error: ' + error.message, 'error');
+                showToast('❌ Error loading data: ' + error.message);
+                setSyncIndicator('error');
+            } finally {
+                showLoading(false);
+                loadBtn.disabled = false;
             }
-            
-            if (currentCell || currentRow.length > 0) {
-                currentRow.push(currentCell.trim());
-                rows.push(currentRow);
-            }
-            
-            return rows;
         }
 
-        function showSheetsStatus(message, type = 'success') {
-            const statusDiv = document.getElementById('sheetsStatus');
-            statusDiv.textContent = message;
-            statusDiv.className = `sheets-status ${type}`;
-            statusDiv.style.display = 'block';
-            
-            if (type === 'success') {
-                setTimeout(() => {
-                    statusDiv.style.display = 'none';
-                }, 5000);
+        async function saveToSheetDB() {
+            if (modifiedRows.size === 0) {
+                showToast('⚠️ No changes to save');
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            showApiStatus(`Saving ${modifiedRows.size} modified records...`, 'info');
+            setSyncIndicator('syncing');
+
+            try {
+                let successCount = 0;
+                let errorCount = 0;
+
+                // Update each modified row
+                for (const index of modifiedRows) {
+                    const row = tableData[index];
+                    
+                    try {
+                        // Prepare data for SheetDB
+                        const updateData = {
+                            'Sr.No': row.srNo,
+                            'Branch': row.branch,
+                            'Staff name (E code optional)': row.staffName,
+                            'Designation': row.designation,
+                            'Re-subscriber': row.reSubscriber,
+                            'New Onboarding': row.newOnboarding,
+                            'Grand Total': row.reSubscriber + row.newOnboarding,
+                            'Opening Balance': row.openingBalance,
+                            'Today Received': row.todayReceived,
+                            'Today Deposit': row.todayDeposit,
+                            'Closing Balance': row.openingBalance + row.todayReceived - row.todayDeposit
+                        };
+
+                        // Update by Sr.No
+                        const response = await fetch(`${CONFIG.SHEETDB_API_URL}/Sr.No/${row.srNo}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ data: updateData })
+                        });
+
+                        if (response.ok) {
+                            successCount++;
+                            // Update original data
+                            originalData[index] = JSON.stringify(row);
+                        } else {
+                            errorCount++;
+                            console.error(`Failed to update row ${row.srNo}:`, await response.text());
+                        }
+
+                    } catch (rowError) {
+                        errorCount++;
+                        console.error(`Error updating row ${row.srNo}:`, rowError);
+                    }
+                }
+
+                modifiedRows.clear();
+                renderTable(); // Re-render to remove modified highlights
+
+                if (errorCount === 0) {
+                    showApiStatus(`✅ Successfully saved ${successCount} records to SheetDB`, 'success');
+                    showToast(`✅ Saved ${successCount} records!`);
+                    setSyncIndicator('success');
+                } else {
+                    showApiStatus(`⚠️ Saved ${successCount} records, ${errorCount} failed`, 'warning');
+                    showToast(`⚠️ ${successCount} saved, ${errorCount} failed`);
+                    setSyncIndicator('error');
+                }
+
+            } catch (error) {
+                console.error('Error saving to SheetDB:', error);
+                showApiStatus('❌ Error: ' + error.message, 'error');
+                showToast('❌ Error saving data: ' + error.message);
+                setSyncIndicator('error');
+            } finally {
+                saveBtn.disabled = false;
+            }
+        }
+
+        async function addRowToSheetDB(newRow) {
+            try {
+                const postData = {
+                    data: {
+                        'Sr.No': newRow.srNo,
+                        'Branch': newRow.branch,
+                        'Staff name (E code optional)': newRow.staffName,
+                        'Designation': newRow.designation,
+                        'Re-subscriber': 0,
+                        'New Onboarding': 0,
+                        'Grand Total': 0,
+                        'Opening Balance': 0,
+                        'Today Received': 0,
+                        'Today Deposit': 0,
+                        'Closing Balance': 0
+                    }
+                };
+
+                const response = await fetch(CONFIG.SHEETDB_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(postData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to add row to SheetDB');
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error adding row to SheetDB:', error);
+                throw error;
+            }
+        }
+
+        async function deleteRowFromSheetDB(srNo) {
+            try {
+                const response = await fetch(`${CONFIG.SHEETDB_API_URL}/Sr.No/${srNo}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete row from SheetDB');
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error deleting row from SheetDB:', error);
+                throw error;
+            }
+        }
+
+        function updateApiUrl() {
+            const newUrl = document.getElementById('apiUrl').value.trim();
+            if (newUrl) {
+                CONFIG.SHEETDB_API_URL = newUrl;
+                localStorage.setItem('sheetdbApiUrl', newUrl);
+                showToast('✅ API URL updated!');
+                closeModal('apiConfigModal');
+                loadFromSheetDB(); // Reload with new URL
+            } else {
+                showToast('❌ Please enter a valid API URL');
+            }
+        }
+
+        async function testApiConnection() {
+            showToast('🔌 Testing connection...');
+            try {
+                const response = await fetch(CONFIG.SHEETDB_API_URL, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showToast(`✅ Connection successful! Found ${data.length} records`);
+                } else {
+                    showToast(`❌ Connection failed: ${response.status} ${response.statusText}`);
+                }
+            } catch (error) {
+                showToast('❌ Connection error: ' + error.message);
             }
         }
 
@@ -789,8 +859,13 @@ For now, use "Export Excel" to save your changes!
                 const actualIndex = tableData.indexOf(row);
                 const grandTotal = row.reSubscriber + row.newOnboarding;
                 const closingBalance = row.openingBalance + row.todayReceived - row.todayDeposit;
+                const isModified = modifiedRows.has(actualIndex);
 
                 const tr = document.createElement('tr');
+                if (isModified) {
+                    tr.classList.add('modified');
+                }
+
                 tr.innerHTML = `
                     <td>${row.srNo}</td>
                     <td>${row.branch}</td>
@@ -833,7 +908,21 @@ For now, use "Export Excel" to save your changes!
         }
 
         function updateValue(index, field, value) {
-            tableData[index][field] = parseInt(value) || 0;
+            const newValue = parseInt(value) || 0;
+            const oldValue = tableData[index][field];
+            
+            if (newValue !== oldValue) {
+                tableData[index][field] = newValue;
+                modifiedRows.add(index);
+                
+                // Auto-save if enabled
+                if (CONFIG.AUTO_SAVE) {
+                    saveToSheetDB();
+                } else {
+                    renderTable(document.getElementById('branchFilter').value);
+                }
+            }
+            
             updateSummary();
         }
 
@@ -852,21 +941,15 @@ For now, use "Export Excel" to save your changes!
             document.getElementById('grandTotal').textContent = totals.reSubscribers + totals.newOnboarding;
             document.getElementById('totalReceived').textContent = totals.received;
             document.getElementById('totalDeposit').textContent = totals.deposit;
-        }
 
-        // =====================================================
-        // DATA MANAGEMENT
-        // =====================================================
-
-        function saveData() {
-            localStorage.setItem('telehealthData', JSON.stringify(tableData));
-            showToast('💾 Data saved locally!');
-        }
-
-        function resetData() {
-            if (confirm('Reset all data to original values? This cannot be undone.')) {
-                localStorage.removeItem('telehealthData');
-                location.reload();
+            // Update save button state
+            const saveBtn = document.getElementById('saveBtn');
+            if (modifiedRows.size > 0) {
+                saveBtn.textContent = `💾 Save ${modifiedRows.size} Changes`;
+                saveBtn.style.animation = 'pulse 2s infinite';
+            } else {
+                saveBtn.textContent = '💾 Save All Changes';
+                saveBtn.style.animation = 'none';
             }
         }
 
@@ -894,8 +977,6 @@ For now, use "Export Excel" to save your changes!
             });
 
             const ws = XLSX.utils.aoa_to_sheet(wsData);
-            
-            // Set column widths
             ws['!cols'] = [
                 {wch: 8}, {wch: 15}, {wch: 25}, {wch: 25}, 
                 {wch: 15}, {wch: 15}, {wch: 12}, {wch: 18}, 
@@ -929,12 +1010,12 @@ For now, use "Export Excel" to save your changes!
             
             const controls = document.querySelector('.controls');
             const actionCells = document.querySelectorAll('.no-export');
-            const sheetsStatus = document.getElementById('sheetsStatus');
+            const apiStatus = document.getElementById('apiStatus');
             const originalDisplay = controls.style.display;
-            const originalStatusDisplay = sheetsStatus.style.display;
+            const originalStatusDisplay = apiStatus.style.display;
             
             controls.style.display = 'none';
-            sheetsStatus.style.display = 'none';
+            apiStatus.style.display = 'none';
             actionCells.forEach(cell => cell.style.display = 'none');
             
             try {
@@ -944,10 +1025,9 @@ For now, use "Export Excel" to save your changes!
                     await loadHtml2Canvas();
                 }
                 
-                // Higher scale and quality settings
                 const canvas = await html2canvas(reportContent, {
                     backgroundColor: '#ffffff',
-                    scale: 3, // Higher quality - 3x resolution
+                    scale: 3,
                     logging: false,
                     useCORS: true,
                     allowTaint: true,
@@ -955,7 +1035,6 @@ For now, use "Export Excel" to save your changes!
                     width: reportContent.scrollWidth,
                     height: reportContent.scrollHeight,
                     onclone: function(clonedDoc) {
-                        // Make sure all text is visible in clone
                         const clonedTable = clonedDoc.querySelector('table');
                         if (clonedTable) {
                             clonedTable.style.tableLayout = 'fixed';
@@ -969,7 +1048,7 @@ For now, use "Export Excel" to save your changes!
                 });
                 
                 const imageType = format === 'jpg' ? 'image/jpeg' : 'image/png';
-                const quality = format === 'jpg' ? 0.98 : 1.0; // Higher quality for JPG
+                const quality = format === 'jpg' ? 0.98 : 1.0;
                 
                 canvas.toBlob((blob) => {
                     const url = URL.createObjectURL(blob);
@@ -987,7 +1066,7 @@ For now, use "Export Excel" to save your changes!
                 showToast('❌ Error generating image: ' + error.message);
             } finally {
                 controls.style.display = originalDisplay;
-                sheetsStatus.style.display = originalStatusDisplay;
+                apiStatus.style.display = originalStatusDisplay;
                 actionCells.forEach(cell => cell.style.display = '');
             }
         }
@@ -1014,12 +1093,13 @@ For now, use "Export Excel" to save your changes!
             document.getElementById(modalId).style.display = 'none';
         }
 
-        function openGoogleDriveModal() {
-            document.getElementById('googleDriveModal').style.display = 'block';
+        function openApiConfigModal() {
+            document.getElementById('apiConfigModal').style.display = 'block';
         }
 
-        document.getElementById('addRowForm').addEventListener('submit', function(e) {
+        document.getElementById('addRowForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const newRow = {
                 srNo: tableData.length + 1,
                 branch: document.getElementById('newBranch').value,
@@ -1031,25 +1111,37 @@ For now, use "Export Excel" to save your changes!
                 todayReceived: 0, 
                 todayDeposit: 0
             };
-            tableData.push(newRow);
-            renderTable();
-            updateSummary();
-            populateBranchFilter();
-            saveData();
-            closeModal('addRowModal');
-            this.reset();
-            showToast('✅ Employee added!');
-        });
 
-        function deleteRow(index) {
-            if (confirm('Delete this employee record?')) {
-                tableData.splice(index, 1);
-                tableData.forEach((row, i) => row.srNo = i + 1);
-                renderTable(document.getElementById('branchFilter').value);
+            try {
+                await addRowToSheetDB(newRow);
+                tableData.push(newRow);
+                renderTable();
                 updateSummary();
                 populateBranchFilter();
-                saveData();
-                showToast('🗑️ Employee deleted!');
+                closeModal('addRowModal');
+                this.reset();
+                showToast('✅ Employee added to sheet!');
+            } catch (error) {
+                showToast('❌ Error adding employee: ' + error.message);
+            }
+        });
+
+        async function deleteRow(index) {
+            if (confirm('Delete this employee record from the sheet?')) {
+                const row = tableData[index];
+                
+                try {
+                    await deleteRowFromSheetDB(row.srNo);
+                    tableData.splice(index, 1);
+                    tableData.forEach((row, i) => row.srNo = i + 1);
+                    renderTable(document.getElementById('branchFilter').value);
+                    updateSummary();
+                    populateBranchFilter();
+                    modifiedRows.delete(index);
+                    showToast('🗑️ Employee deleted from sheet!');
+                } catch (error) {
+                    showToast('❌ Error deleting employee: ' + error.message);
+                }
             }
         }
 
@@ -1086,11 +1178,52 @@ For now, use "Export Excel" to save your changes!
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
+        function showApiStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('apiStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = `api-status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function showLoading(show) {
+            const loader = document.getElementById('loadingIndicator');
+            if (show) {
+                loader.classList.add('active');
+            } else {
+                loader.classList.remove('active');
+            }
+        }
+
+        function setSyncIndicator(status) {
+            const indicator = document.getElementById('syncIndicator');
+            indicator.className = 'sync-indicator';
+            if (status === 'syncing') {
+                indicator.classList.add('syncing');
+            } else if (status === 'error') {
+                indicator.classList.add('error');
+            }
+        }
+
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = 'none';
             }
         }
+
+        // Warn user about unsaved changes
+        window.addEventListener('beforeunload', function (e) {
+            if (modifiedRows.size > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
 
         // Initialize on page load
         init();
