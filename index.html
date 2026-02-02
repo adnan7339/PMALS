@@ -1,71 +1,25 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sehat Kahani - Tele Health Progress Report (SheetBest API Connected)</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live + JSON + Upload | Universal TeleHealth Dashboard</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #eef1f7;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            max-width: 1300px;
-            margin: auto;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        }
-        .header {
-            text-align: center;
-            padding: 20px;
-            background: #1e3c72;
-            color: white;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th {
-            background: #2c3e50;
-            color: white;
-            padding: 10px;
-            position: sticky;
-            top: 0;
-        }
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        input[type="number"] {
-            width: 90%;
-            padding: 4px;
-        }
-        .status {
-            padding: 10px;
-            margin-top: 10px;
-            display: none;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 6px;
-            margin-right: 10px;
-        }
-        .btn-primary { background: #1e88e5; color: white; }
-        .btn-success { background: #43a047; color: white; }
-        .btn-warning { background: #fb8c00; color: white; }
-    </style>
+<style>
+    body { font-family: Arial; background: #eef1f7; padding: 20px; }
+    .container { background: white; padding: 20px; border-radius: 10px; max-width: 1300px; margin: auto; }
+    .header { text-align:center; background:#1e3c72; color:white; padding:20px; border-radius:10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th { background: #2c3e50; color:white; padding:10px; }
+    td { border: 1px solid #ccc; padding: 8px; }
+    input[type="number"] { width: 90%; }
+    .status { display:none; padding:10px; margin-top:15px; border-radius:6px; color:white; font-weight:bold; }
+    .btn { padding:10px 18px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-right:10px; }
+    .btn-primary { background:#1976D2; color:white; }
+    .btn-success { background:#43A047; color:white; }
+    .btn-warning { background:#FB8C00; color:white; }
+    .btn-info { background:#6A1B9A; color:white; }
+</style>
 </head>
 
 <body>
@@ -73,32 +27,39 @@
 <div class="container">
 
     <div class="header">
-        <h1>🏥 Sehat Kahani - Tele Health Progress Report</h1>
+        <h2>📊 Universal TeleHealth Progress Dashboard</h2>
         <p id="currentDate"></p>
     </div>
 
-    <button class="btn btn-success" onclick="loadFromAPI()">🔄 Refresh</button>
-    <button class="btn btn-primary" onclick="saveToAPI()">💾 Save Changes</button>
+    <br>
 
-    <div class="status" id="apiStatus"></div>
+    <button class="btn btn-success" onclick="loadFromAPI()">🔄 Load From API</button>
+    <button class="btn btn-primary" onclick="saveToAPI()">💾 Save Changes (API)</button>
+    <button class="btn btn-warning" onclick="uploadJSONtoAPI()">⬆ Upload JSON → API</button>
+
+    <label class="btn btn-info">
+        📥 Import JSON
+        <input type="file" id="jsonFile" accept="application/json" style="display:none" onchange="loadLocalJSON(event)">
+    </label>
+
+    <div id="apiStatus" class="status"></div>
 
     <table>
         <thead>
-        <tr>
-            <th>Sr.No</th>
-            <th>Branch</th>
-            <th>Staff Name</th>
-            <th>Designation</th>
-            <th>Re-subscriber</th>
-            <th>New Onboarding</th>
-            <th>Grand Total</th>
-            <th>Opening Balance</th>
-            <th>Today Received</th>
-            <th>Today Deposit</th>
-            <th>Closing Balance</th>
-        </tr>
+            <tr>
+                <th>Sr.No</th>
+                <th>Branch</th>
+                <th>Staff Name</th>
+                <th>Designation</th>
+                <th>Re-subscriber</th>
+                <th>New Onboarding</th>
+                <th>Total</th>
+                <th>Opening</th>
+                <th>Received</th>
+                <th>Deposit</th>
+                <th>Closing</th>
+            </tr>
         </thead>
-
         <tbody id="tableBody"></tbody>
     </table>
 
@@ -106,57 +67,62 @@
 
 <script>
 
-// ----------------------------
-// YOUR SHEETBEST API SETTINGS
-// ----------------------------
-const API_URL = "https://api.sheetbest.com/sheets/8c42dff2-d012-4a55-9b1a-41770fab3ea7";
+// -------------------------------
+// USER INPUT API SETTINGS
+// -------------------------------
+const API_URL = prompt("Enter your SheetBest API URL:", "");
+const API_KEY = prompt("Enter your API KEY:", "");
 
-const API_KEY = "R4JrR0lvUVVeuPWCpY7f9XNKbOInA4h1%_qOdHjpzAimDUi5QI8iZ3mz35S9B08g";
+// -------------------------------
+// JSON FALLBACK DATA (OPTION-C)
+// -------------------------------
+let fallbackJSON = {
+  "data": [
+    { "Sr.No": 1, "Branch": "Test Branch", "Staff Name": "Ali", "Designation": "Manager",
+      "Re-subscriber": 5, "New Onboarding": 3, "Opening Balance": 200,
+      "Today Received": 50, "Today Deposit": 60 }
+  ]
+};
 
 let tableData = [];
 let modifiedRows = new Set();
 
-// ----------------------------
-// Load current date
-// ----------------------------
+// -------------------------------
+// LOAD DATE
+// -------------------------------
 document.getElementById("currentDate").innerText =
     new Date().toLocaleDateString("en-GB");
 
-// ----------------------------
-// LOAD DATA FROM SHEETBEST
-// ----------------------------
+// -------------------------------
+// LOAD FROM API (OPTION-1)
+// -------------------------------
 async function loadFromAPI() {
-    showStatus("⏳ Loading data...", "blue");
+    showStatus("⏳ Loading from API...", "blue");
 
     try {
         const res = await fetch(API_URL, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${API_KEY}`
-            }
+            headers: { "Authorization": `Bearer ${API_KEY}` }
         });
-
         const data = await res.json();
         tableData = data;
         renderTable();
+        showStatus("✅ Loaded from API", "green");
 
-        showStatus("✅ Data loaded successfully!", "green");
-
-    } catch (err) {
-        showStatus("❌ Error loading data: " + err.message, "red");
+    } catch (e) {
+        showStatus("⚠ API unavailable → Loading fallback JSON", "orange");
+        tableData = fallbackJSON.data;
+        renderTable();
     }
 }
 
-// ----------------------------
-// SAVE CHANGES TO SHEETBEST
-// ----------------------------
+// -------------------------------
+// SAVE INDIVIDUAL CHANGED ROWS
+// -------------------------------
 async function saveToAPI() {
-    if (modifiedRows.size === 0) {
-        showStatus("⚠️ No changes to save!", "orange");
-        return;
-    }
+    if (modifiedRows.size === 0)
+        return showStatus("⚠ No changes to save!", "orange");
 
-    showStatus("⏳ Saving changes...", "blue");
+    showStatus("⏳ Saving to API...", "blue");
 
     for (let index of modifiedRows) {
         let row = tableData[index];
@@ -172,36 +138,70 @@ async function saveToAPI() {
     }
 
     modifiedRows.clear();
-    showStatus("✅ All changes saved!", "green");
+    showStatus("✅ Saved successfully!", "green");
 }
 
-// ----------------------------
+// -------------------------------
+// UPLOAD WHOLE JSON → API
+// -------------------------------
+async function uploadJSONtoAPI() {
+    showStatus("⏳ Uploading full JSON...", "blue");
+
+    await fetch(API_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify(tableData)
+    });
+
+    showStatus("✅ JSON uploaded to API!", "green");
+}
+
+// -------------------------------
+// IMPORT LOCAL JSON FILE
+// -------------------------------
+function loadLocalJSON(event) {
+    let file = event.target.files[0];
+    let reader = new FileReader();
+
+    reader.onload = function(e) {
+        tableData = JSON.parse(e.target.result);
+        if (tableData.data) tableData = tableData.data;
+        renderTable();
+        showStatus("📥 JSON Loaded!", "green");
+    };
+
+    reader.readAsText(file);
+}
+
+// -------------------------------
 // RENDER TABLE
-// ----------------------------
+// -------------------------------
 function renderTable() {
     let tbody = document.getElementById("tableBody");
     tbody.innerHTML = "";
 
     tableData.forEach((row, i) => {
         let tr = document.createElement("tr");
-
         tr.innerHTML = `
-            <td>${row["Sr.No"]}</td>
+            <td>${row["Sr.No"] || i+1}</td>
             <td>${row["Branch"]}</td>
             <td>${row["Staff Name"]}</td>
             <td>${row["Designation"]}</td>
 
-            <td><input type="number" value="${row["Re-subscriber"]}" onchange="updateValue(${i}, 'Re-subscriber', this.value)"></td>
+            <td><input type="number" value="${row["Re-subscriber"]}" onchange="update(${i}, 'Re-subscriber', this.value)"></td>
 
-            <td><input type="number" value="${row["New Onboarding"]}" onchange="updateValue(${i}, 'New Onboarding', this.value)"></td>
+            <td><input type="number" value="${row["New Onboarding"]}" onchange="update(${i}, 'New Onboarding', this.value)"></td>
 
             <td>${(+row["Re-subscriber"]) + (+row["New Onboarding"])}</td>
 
-            <td><input type="number" value="${row['Opening Balance']}" onchange="updateValue(${i}, 'Opening Balance', this.value)"></td>
+            <td><input type="number" value="${row["Opening Balance"]}" onchange="update(${i}, 'Opening Balance', this.value)"></td>
 
-            <td><input type="number" value="${row['Today Received']}" onchange="updateValue(${i}, 'Today Received', this.value)"></td>
+            <td><input type="number" value="${row["Today Received"]}" onchange="update(${i}, 'Today Received', this.value)"></td>
 
-            <td><input type="number" value="${row['Today Deposit']}" onchange="updateValue(${i}, 'Today Deposit', this.value)"></td>
+            <td><input type="number" value="${row["Today Deposit"]}" onchange="update(${i}, 'Today Deposit', this.value)"></td>
 
             <td>${(+row["Opening Balance"]) + (+row["Today Received"]) - (+row["Today Deposit"])}</td>
         `;
@@ -209,30 +209,25 @@ function renderTable() {
     });
 }
 
-// ----------------------------
-// UPDATE VALUE IN ROW
-// ----------------------------
-function updateValue(index, field, value) {
-    tableData[index][field] = value;
-    modifiedRows.add(index);
-    renderTable();
+// -------------------------------
+// UPDATE FIELD
+// -------------------------------
+function update(i, field, value) {
+    tableData[i][field] = value;
+    modifiedRows.add(i);
 }
 
-// ----------------------------
-// STATUS MESSAGE
-// ----------------------------
+// -------------------------------
 function showStatus(msg, color) {
     let box = document.getElementById("apiStatus");
     box.style.display = "block";
     box.style.background = color;
-    box.style.color = "white";
-    box.innerHTML = msg;
+    box.innerText = msg;
 }
 
 // Auto-load
 loadFromAPI();
 
 </script>
-
 </body>
 </html>
