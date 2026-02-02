@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sehat Kahani - Tele Health Progress Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .date-display {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+        }
+
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .editable {
+            background: #fff3cd;
+        }
+
+        .calculated {
+            background: #d4edda;
+            font-weight: 600;
+            color: #155724;
+        }
+
+        .summary {
+            padding: 20px 30px;
+            background: #e3f2fd;
+            border-top: 2px solid #2196F3;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .summary-item h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .summary-item .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .close {
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .branch-header {
+            background: #fff3cd;
+            font-weight: bold;
+        }
+
+        @media print {
+            .controls, .btn {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Branch Wise Sehat Kahani Progress Report</h1>
+            <div class="date-display" id="reportDate">Mianwali Area - Dated: 01-02-2026</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="saveData()">💾 Save Data</button>
+            <button class="btn btn-secondary" onclick="exportToExcel()">📊 Export to Excel</button>
+            <button class="btn btn-warning" onclick="exportToCSV()">📄 Export to CSV</button>
+            <button class="btn btn-danger" onclick="resetData()">🔄 Reset Data</button>
+            <button class="btn btn-primary" onclick="openAddRowModal()">➕ Add New Row</button>
+            
+            <div class="filter-section">
+                <label for="branchFilter">Branch Filter:</label>
+                <select id="branchFilter" onchange="filterByBranch()">
+                    <option value="all">All Branches</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Sr.No</th>
+                        <th>Branch</th>
+                        <th>Staff Name</th>
+                        <th>Designation</th>
+                        <th>Re-subscriber</th>
+                        <th>New Onboarding</th>
+                        <th>Grand Total</th>
+                        <th>Opening Balance</th>
+                        <th>Today Received</th>
+                        <th>Today Deposit</th>
+                        <th>Closing Balance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary" id="summary">
+        </div>
+    </div>
+
+    <!-- Add Row Modal -->
+    <div id="addRowModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Employee</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="addRowForm">
+                <div class="form-group">
+                    <label>Branch:</label>
+                    <input type="text" id="newBranch" required>
+                </div>
+                <div class="form-group">
+                    <label>Staff Name:</label>
+                    <input type="text" id="newStaffName" required>
+                </div>
+                <div class="form-group">
+                    <label>Designation:</label>
+                    <input type="text" id="newDesignation" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Employee</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Initial data structure
+        let tableData = [
+            {srNo: 1, branch: "Mianwali-1", staffName: "Muhammad Sijad", designation: "Assistant Branch Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 2, branch: "Mianwali-1", staffName: "Zafar Iqbal", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 3, branch: "Mianwali-1", staffName: "Karam Elahi", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 4, branch: "Mianwali-1", staffName: "Shahid Abbas", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 5, branch: "Mianwali-1", staffName: "Nadeem Abbas", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 6, branch: "Mianwali-1", staffName: "Muhammad Usama Hassan Khan", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 7, branch: "Mianwali-2", staffName: "Zain Ul Islam", designation: "Assistant Branch Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 8, branch: "Mianwali-2", staffName: "Muhammad Arif Khan", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 9, branch: "Mianwali-2", staffName: "Muhammad Touqeer Iqbal", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 10, branch: "Mosa Khail (MSK)", staffName: "Tanveer Hayat", designation: "Branch Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 11, branch: "Mosa Khail (MSK)", staffName: "Muhammad Umair", designation: "Assistant Branch Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
+            {srNo: 12, branch: "Mosa Khail (MSK)", staffName: "Jawad Usman Khan", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0}
+        ];
+
+        // Load data from localStorage if available
+        function loadData() {
+            const saved = localStorage.getItem('telehealthData');
+            if (saved) {
+                tableData = JSON.parse(saved);
+            }
+            renderTable();
+            updateSummary();
+            populateBranchFilter();
+        }
+
+        // Render table
+        function renderTable(filterBranch = 'all') {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            const filteredData = filterBranch === 'all' 
+                ? tableData 
+                : tableData.filter(row => row.branch === filterBranch);
+
+            filteredData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                
+                const grandTotal = row.reSubscriber + row.newOnboarding;
+                const closingBalance = row.openingBalance + row.todayReceived - row.todayDeposit;
+                
+                tr.innerHTML = `
+                    <td>${row.srNo}</td>
+                    <td><input type="text" value="${row.branch}" onchange="updateCell(${tableData.indexOf(row)}, 'branch', this.value)" class="editable"></td>
+                    <td><input type="text" value="${row.staffName}" onchange="updateCell(${tableData.indexOf(row)}, 'staffName', this.value)" class="editable"></td>
+                    <td><input type="text" value="${row.designation}" onchange="updateCell(${tableData.indexOf(row)}, 'designation', this.value)" class="editable"></td>
+                    <td><input type="number" value="${row.reSubscriber}" onchange="updateCell(${tableData.indexOf(row)}, 'reSubscriber', parseFloat(this.value))" class="editable"></td>
+                    <td><input type="number" value="${row.newOnboarding}" onchange="updateCell(${tableData.indexOf(row)}, 'newOnboarding', parseFloat(this.value))" class="editable"></td>
+                    <td class="calculated">${grandTotal}</td>
+                    <td><input type="number" value="${row.openingBalance}" onchange="updateCell(${tableData.indexOf(row)}, 'openingBalance', parseFloat(this.value))" class="editable"></td>
+                    <td><input type="number" value="${row.todayReceived}" onchange="updateCell(${tableData.indexOf(row)}, 'todayReceived', parseFloat(this.value))" class="editable"></td>
+                    <td><input type="number" value="${row.todayDeposit}" onchange="updateCell(${tableData.indexOf(row)}, 'todayDeposit', parseFloat(this.value))" class="editable"></td>
+                    <td class="calculated">${closingBalance}</td>
+                    <td><button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteRow(${tableData.indexOf(row)})">🗑️</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Update cell
+        function updateCell(rowIndex, field, value) {
+            tableData[rowIndex][field] = value;
+            renderTable(document.getElementById('branchFilter').value);
+            updateSummary();
+            showToast('Data updated successfully!');
+        }
+
+        // Save data
+        function saveData() {
+            localStorage.setItem('telehealthData', JSON.stringify(tableData));
+            showToast('✅ Data saved successfully!');
+        }
+
+        // Update summary
+        function updateSummary() {
+            const summary = document.getElementById('summary');
+            
+            let totalReSubscriber = 0;
+            let totalNewOnboarding = 0;
+            let totalGrandTotal = 0;
+            let totalCash = 0;
+
+            tableData.forEach(row => {
+                totalReSubscriber += row.reSubscriber;
+                totalNewOnboarding += row.newOnboarding;
+                totalGrandTotal += row.reSubscriber + row.newOnboarding;
+                totalCash += (row.openingBalance + row.todayReceived - row.todayDeposit);
+            });
+
+            summary.innerHTML = `
+                <div class="summary-item">
+                    <h3>Total Re-Subscribers</h3>
+                    <div class="value">${totalReSubscriber}</div>
+                </div>
+                <div class="summary-item">
+                    <h3>Total New Onboarding</h3>
+                    <div class="value">${totalNewOnboarding}</div>
+                </div>
+                <div class="summary-item">
+                    <h3>Grand Total Members</h3>
+                    <div class="value">${totalGrandTotal}</div>
+                </div>
+                <div class="summary-item">
+                    <h3>Total Cash in Hand</h3>
+                    <div class="value">Rs. ${totalCash.toLocaleString()}</div>
+                </div>
+            `;
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            const wsData = [
+                ['Branch Wise Sehat Kahani Progress Report Mianwali Area'],
+                ['Sr.No', 'Branch', 'Staff Name', 'Designation', 'Re-subscriber', 'New Onboarding', 'Grand Total', 'Opening Balance', 'Today Received', 'Today Deposit', 'Closing Balance']
+            ];
+
+            tableData.forEach(row => {
+                wsData.push([
+                    row.srNo,
+                    row.branch,
+                    row.staffName,
+                    row.designation,
+                    row.reSubscriber,
+                    row.newOnboarding,
+                    row.reSubscriber + row.newOnboarding,
+                    row.openingBalance,
+                    row.todayReceived,
+                    row.todayDeposit,
+                    row.openingBalance + row.todayReceived - row.todayDeposit
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Report');
+            XLSX.writeFile(wb, `Telehealth_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast('📊 Excel file exported!');
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            let csv = 'Sr.No,Branch,Staff Name,Designation,Re-subscriber,New Onboarding,Grand Total,Opening Balance,Today Received,Today Deposit,Closing Balance\n';
+            
+            tableData.forEach(row => {
+                csv += `${row.srNo},"${row.branch}","${row.staffName}","${row.designation}",${row.reSubscriber},${row.newOnboarding},${row.reSubscriber + row.newOnboarding},${row.openingBalance},${row.todayReceived},${row.todayDeposit},${row.openingBalance + row.todayReceived - row.todayDeposit}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Telehealth_Report_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            showToast('📄 CSV file exported!');
+        }
+
+        // Reset data
+        function resetData() {
+            if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                localStorage.removeItem('telehealthData');
+                location.reload();
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Add new row modal
+        function openAddRowModal() {
+            document.getElementById('addRowModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('addRowModal').style.display = 'none';
+        }
+
+        // Add new row
+        document.getElementById('addRowForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newRow = {
+                srNo: tableData.length + 1,
+                branch: document.getElementById('newBranch').value,
+                staffName: document.getElementById('newStaffName').value,
+                designation: document.getElementById('newDesignation').value,
+                reSubscriber: 0,
+                newOnboarding: 0,
+                openingBalance: 0,
+                todayReceived: 0,
+                todayDeposit: 0
+            };
+
+            tableData.push(newRow);
+            renderTable();
+            updateSummary();
+            populateBranchFilter();
+            closeModal();
+            this.reset();
+            showToast('✅ New employee added!');
+        });
+
+        // Delete row
+        function deleteRow(index) {
+            if (confirm('Are you sure you want to delete this row?')) {
+                tableData.splice(index, 1);
+                // Renumber rows
+                tableData.forEach((row, i) => row.srNo = i + 1);
+                renderTable(document.getElementById('branchFilter').value);
+                updateSummary();
+                populateBranchFilter();
+                showToast('🗑️ Row deleted!');
+            }
+        }
+
+        // Populate branch filter
+        function populateBranchFilter() {
+            const branches = [...new Set(tableData.map(row => row.branch))];
+            const select = document.getElementById('branchFilter');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="all">All Branches</option>';
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch;
+                option.textContent = branch;
+                select.appendChild(option);
+            });
+            
+            select.value = currentValue;
+        }
+
+        // Filter by branch
+        function filterByBranch() {
+            const filterValue = document.getElementById('branchFilter').value;
+            renderTable(filterValue);
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('addRowModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize
+        loadData();
+    </script>
+
+    <!-- Add SheetJS library for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</body>
+</html>
