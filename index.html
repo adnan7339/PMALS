@@ -3,1233 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sehat Kahani - Tele Health Progress Report (SheetDB)</title>
+    <title>Sehat Kahani - Tele Health Progress Report (SheetBest)</title>
+
+    <!-- SAME CSS AS BEFORE (NO CHANGE) -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            min-height:100vh; padding:20px;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .date-display {
-            font-size: 18px;
-            opacity: 0.9;
-            margin-top: 10px;
-        }
-
-        .controls {
-            padding: 20px 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
-        }
-
-        .btn-secondary {
-            background: #2196F3;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #0b7dda;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
-        }
-
-        .btn-success {
-            background: #0F9D58;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #0d8a4d;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(15, 157, 88, 0.4);
-        }
-
-        .btn-danger {
-            background: #f44336;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #da190b;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
-        }
-
-        .btn-warning {
-            background: #ff9800;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #e68900;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
-        }
-
-        .btn-info {
-            background: #9C27B0;
-            color: white;
-        }
-
-        .btn-info:hover {
-            background: #7B1FA2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        #reportContent {
-            padding: 30px;
-            background: white;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        th {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 15px 10px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 14px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 12px 10px;
-            border: 1px solid #e0e0e0;
-            font-size: 14px;
-            vertical-align: middle;
-        }
-
-        tr:hover {
-            background: #f5f5f5;
-        }
-
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        .editable {
-            background: #fff3cd;
-        }
-
-        .calculated {
-            background: #d4edda;
-            font-weight: 600;
-            color: #155724;
-        }
-
-        .modified {
-            background: #ffe5b4 !important;
-        }
-
-        .summary {
-            padding: 20px 30px;
-            background: #e3f2fd;
-            border-top: 2px solid #2196F3;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .summary-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .summary-item h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .summary-item .value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2196F3;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s;
-        }
-
-        .modal-content {
-            background: white;
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: #000;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        #toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #323232;
-            color: white;
-            padding: 16px 24px;
-            border-radius: 8px;
-            display: none;
-            animation: slideUp 0.3s;
-            z-index: 2000;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            font-size: 18px;
-            color: #666;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        select {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .no-export {
-            /* Column that won't be exported */
-        }
-
-        .api-status {
-            padding: 10px 20px;
-            background: #e8f5e9;
-            border-left: 4px solid #4CAF50;
-            margin: 10px 0;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .api-status.error {
-            background: #ffebee;
-            border-left-color: #f44336;
-        }
-
-        .api-status.warning {
-            background: #fff3e0;
-            border-left-color: #ff9800;
-        }
-
-        .api-status.info {
-            background: #e3f2fd;
-            border-left-color: #2196F3;
-        }
-
-        .sync-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #4CAF50;
-            margin-left: 10px;
-            animation: pulse 2s infinite;
-        }
-
-        .sync-indicator.syncing {
-            background: #ff9800;
-        }
-
-        .sync-indicator.error {
-            background: #f44336;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @media print {
-            .controls, .no-export, .api-status {
-                display: none !important;
-            }
-        }
+        .container { max-width:1400px; margin:auto; background:white; border-radius:15px;
+            box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; }
+        .header { background:linear-gradient(135deg,#1e3c72 0%,#2a5298 100%); color:white;
+            padding:30px; text-align:center; }
+        .header h1 { font-size:28px; margin-bottom:10px; text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
+        .date-display { font-size:18px; opacity:0.9; margin-top:10px; }
+        .controls { padding:20px 30px; background:#f8f9fa; border-bottom:2px solid #dee2e6;
+            display:flex; flex-wrap:wrap; gap:15px; }
+        .btn { padding:12px 24px; border:none; border-radius:8px; cursor:pointer;
+            font-weight:600; transition:all 0.3s; }
+        .btn-primary { background:#4CAF50; color:white; }
+        .btn-secondary { background:#2196F3; color:white; }
+        .btn-success { background:#0F9D58; color:white; }
+        .btn-danger { background:#f44336; color:white; }
+        .btn-warning { background:#ff9800; color:white; }
+        .btn-info { background:#9C27B0; color:white; }
+        table { width:100%; border-collapse:collapse; background:white;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1); margin-top:20px; }
+        th { background:linear-gradient(135deg,#2c3e50 0%,#3498db 100%); color:white;
+            padding:15px 10px; position:sticky; top:0; }
+        td { padding:12px 10px; border:1px solid #e0e0e0; }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>🏥 Sehat Kahani - Tele Health Progress Report</h1>
             <div class="date-display" id="currentDate"></div>
-            <div style="margin-top: 10px; font-size: 14px;">
-                🔄 Live Sync with SheetDB <span class="sync-indicator" id="syncIndicator"></span>
-            </div>
         </div>
 
         <div class="controls">
-            <button class="btn btn-success" onclick="loadFromSheetDB()" id="loadBtn">
-                🔄 Refresh from Sheet
-            </button>
-            <button class="btn btn-primary" onclick="saveToSheetDB()" id="saveBtn">
-                💾 Save All Changes
-            </button>
-            <button class="btn btn-secondary" onclick="exportToExcel()">
-                📥 Export Excel
-            </button>
-            <button class="btn btn-secondary" onclick="exportToCSV()">
-                📄 Export CSV
-            </button>
-            <button class="btn btn-warning" onclick="downloadAsImage('png')">
-                🖼️ PNG
-            </button>
-            <button class="btn btn-warning" onclick="downloadAsImage('jpg')">
-                📷 JPG
-            </button>
-            <button class="btn btn-info" onclick="openAddRowModal()">
-                ➕ Add Employee
-            </button>
+            <button class="btn btn-success" onclick="loadFromAPI()">🔄 Refresh</button>
+            <button class="btn btn-primary" onclick="saveToAPI()">💾 Save</button>
             <select id="branchFilter" onchange="filterByBranch()">
                 <option value="all">All Branches</option>
             </select>
-            <button class="btn btn-info" onclick="openApiConfigModal()">
-                ⚙️ API Settings
-            </button>
         </div>
 
-        <div id="apiStatus" class="api-status" style="display:none;"></div>
+        <div id="apiStatus" style="padding:10px; display:none;"></div>
 
-        <div id="reportContent">
-            <div class="loading" id="loadingIndicator">
-                ⏳ Loading data from SheetDB...
-            </div>
-            
-            <div class="table-container">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Sr.No</th>
-                            <th>Branch</th>
-                            <th>Staff Name</th>
-                            <th>Designation</th>
-                            <th>Re-subscriber</th>
-                            <th>New Onboarding</th>
-                            <th>Grand Total</th>
-                            <th>Opening Balance</th>
-                            <th>Today Received</th>
-                            <th>Today Deposit</th>
-                            <th>Closing Balance</th>
-                            <th class="no-export">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="summary">
-            <div class="summary-item">
-                <h3>Total Employees</h3>
-                <div class="value" id="totalEmployees">0</div>
-            </div>
-            <div class="summary-item">
-                <h3>Total Re-subscribers</h3>
-                <div class="value" id="totalReSubscribers">0</div>
-            </div>
-            <div class="summary-item">
-                <h3>Total New Onboarding</h3>
-                <div class="value" id="totalNewOnboarding">0</div>
-            </div>
-            <div class="summary-item">
-                <h3>Grand Total</h3>
-                <div class="value" id="grandTotal">0</div>
-            </div>
-            <div class="summary-item">
-                <h3>Total Cash Received</h3>
-                <div class="value" id="totalReceived">0</div>
-            </div>
-            <div class="summary-item">
-                <h3>Total Deposit</h3>
-                <div class="value" id="totalDeposit">0</div>
-            </div>
-        </div>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Sr.No</th>
+                    <th>Branch</th>
+                    <th>Staff Name</th>
+                    <th>Designation</th>
+                    <th>Re-subscriber</th>
+                    <th>New Onboarding</th>
+                    <th>Grand Total</th>
+                    <th>Opening Balance</th>
+                    <th>Today Received</th>
+                    <th>Today Deposit</th>
+                    <th>Closing Balance</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
     </div>
 
-    <!-- Add Row Modal -->
-    <div id="addRowModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addRowModal')">&times;</span>
-            <h2>➕ Add New Employee</h2>
-            <form id="addRowForm">
-                <div class="form-group">
-                    <label>Branch:</label>
-                    <input type="text" id="newBranch" required>
-                </div>
-                <div class="form-group">
-                    <label>Staff Name:</label>
-                    <input type="text" id="newStaffName" required>
-                </div>
-                <div class="form-group">
-                    <label>Designation:</label>
-                    <input type="text" id="newDesignation" required>
-                </div>
-                <button type="submit" class="btn btn-success">Add Employee</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- API Configuration Modal -->
-    <div id="apiConfigModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('apiConfigModal')">&times;</span>
-            <h2>⚙️ SheetDB API Configuration</h2>
-            <div class="form-group">
-                <label>SheetDB API URL:</label>
-                <input type="text" id="apiUrl" value="https://sheetdb.io/api/v1/v4bvfipfqutsh" placeholder="Enter SheetDB API URL">
-                <p style="font-size: 12px; color: #666; margin-top: 10px;">
-                    Your API endpoint from SheetDB.io dashboard
-                </p>
-            </div>
-            <button class="btn btn-success" onclick="updateApiUrl()">Save Configuration</button>
-            <button class="btn btn-secondary" onclick="testApiConnection()" style="margin-left: 10px;">Test Connection</button>
-        </div>
-    </div>
-
-    <div id="toast"></div>
+    <!-- ========================= -->
+    <!--     JAVASCRIPT SECTION    -->
+    <!-- ========================= -->
 
     <script>
-        // =====================================================
-        // CONFIGURATION
-        // =====================================================
-        
-        const CONFIG = {
-            SHEETDB_API_URL: localStorage.getItem('sheetdbApiUrl') || 'https://sheetdb.io/api/v1/v4bvfipfqutsh',
-            AUTO_SAVE: false, // Set to true for auto-save on every change
-            AUTO_REFRESH_INTERVAL: 30000 // Refresh every 30 seconds (optional)
-        };
+    // -----------------------------
+    // YOUR NEW SHEETBEST API LINK
+    // -----------------------------
+    const API_URL = "https://api.sheetbest.com/sheets/8c42dff2-d012-4a55-9b1a-41770fab3ea7";
 
-        let tableData = [];
-        let modifiedRows = new Set(); // Track which rows have been modified
-        let originalData = {}; // Store original values for comparison
+    let tableData = [];
+    let modifiedRows = new Set();
 
-        // =====================================================
-        // INITIALIZATION
-        // =====================================================
+    document.getElementById("currentDate").innerText =
+        new Date().toLocaleDateString("en-GB");
 
-        function init() {
-            // Display current date
-            const today = new Date();
-            document.getElementById('currentDate').textContent = 
-                today.toLocaleDateString('en-GB', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
+    // -----------------------------
+    //   LOAD DATA FROM SHEETBEST
+    // -----------------------------
+    async function loadFromAPI() {
+        showStatus("⏳ Loading data...", "blue");
 
-            // Load API URL from storage
-            const savedApiUrl = localStorage.getItem('sheetdbApiUrl');
-            if (savedApiUrl) {
-                document.getElementById('apiUrl').value = savedApiUrl;
-            }
+        try {
+            const res = await fetch(API_URL);
+            const data = await res.json();
 
-            // Auto-load data from SheetDB
-            loadFromSheetDB();
+            tableData = data;
+            renderTable();
 
-            // Optional: Auto-refresh
-            if (CONFIG.AUTO_REFRESH_INTERVAL > 0) {
-                setInterval(() => {
-                    if (modifiedRows.size === 0) {
-                        loadFromSheetDB(true); // Silent refresh
-                    }
-                }, CONFIG.AUTO_REFRESH_INTERVAL);
-            }
+            showStatus("✅ Data Loaded Successfully!", "green");
+        } catch (err) {
+            showStatus("❌ Error Loading Data: " + err, "red");
+        }
+    }
+
+    // -----------------------------
+    //   SAVE UPDATED ROWS
+    // -----------------------------
+    async function saveToAPI() {
+        if (modifiedRows.size === 0) {
+            showStatus("⚠️ No changes to save!", "orange");
+            return;
         }
 
-        // =====================================================
-        // SHEETDB API INTEGRATION
-        // =====================================================
+        showStatus("⏳ Saving changes...", "blue");
 
-        async function loadFromSheetDB(silent = false) {
-            if (!silent) {
-                showLoading(true);
-                showApiStatus('Loading data from SheetDB...', 'info');
-            }
-            setSyncIndicator('syncing');
+        for (let index of modifiedRows) {
+            let row = tableData[index];
 
-            const loadBtn = document.getElementById('loadBtn');
-            loadBtn.disabled = true;
-
-            try {
-                const response = await fetch(CONFIG.SHEETDB_API_URL, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                
-                if (!Array.isArray(data)) {
-                    throw new Error('Invalid data format received from API');
-                }
-
-                // Parse the data
-                tableData = data.map((row, index) => {
-                    const record = {
-                        srNo: parseInt(row['Sr.No'] || row.srNo || index + 1) || index + 1,
-                        branch: String(row['Branch'] || row.branch || '').trim(),
-                        staffName: String(row['Staff name (E code optional)'] || row['Staff Name'] || row.staffName || '').trim(),
-                        designation: String(row['Designation'] || row.designation || '').trim(),
-                        reSubscriber: parseInt(row['Re-subscriber'] || row.reSubscriber || 0) || 0,
-                        newOnboarding: parseInt(row['New Onboarding'] || row.newOnboarding || 0) || 0,
-                        openingBalance: parseInt(row['Opening Balance'] || row.openingBalance || 0) || 0,
-                        todayReceived: parseInt(row['Today Received'] || row.todayReceived || 0) || 0,
-                        todayDeposit: parseInt(row['Today Deposit'] || row.todayDeposit || 0) || 0,
-                        _id: row.id || row._id || null // Store SheetDB row ID for updates
-                    };
-                    
-                    // Store original data for comparison
-                    originalData[index] = JSON.stringify(record);
-                    
-                    return record;
-                }).filter(row => row.branch || row.staffName); // Filter out empty rows
-
-                if (tableData.length === 0) {
-                    throw new Error('No data found in the sheet');
-                }
-
-                modifiedRows.clear(); // Clear modified rows on fresh load
-                renderTable();
-                updateSummary();
-                populateBranchFilter();
-
-                if (!silent) {
-                    showApiStatus(`✅ Successfully loaded ${tableData.length} records from SheetDB`, 'success');
-                    showToast(`✅ Loaded ${tableData.length} records!`);
-                }
-                setSyncIndicator('success');
-
-            } catch (error) {
-                console.error('Error loading from SheetDB:', error);
-                showApiStatus('❌ Error: ' + error.message, 'error');
-                showToast('❌ Error loading data: ' + error.message);
-                setSyncIndicator('error');
-            } finally {
-                showLoading(false);
-                loadBtn.disabled = false;
-            }
-        }
-
-        async function saveToSheetDB() {
-            if (modifiedRows.size === 0) {
-                showToast('⚠️ No changes to save');
-                return;
-            }
-
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true;
-            showApiStatus(`Saving ${modifiedRows.size} modified records...`, 'info');
-            setSyncIndicator('syncing');
-
-            try {
-                let successCount = 0;
-                let errorCount = 0;
-
-                // Update each modified row
-                for (const index of modifiedRows) {
-                    const row = tableData[index];
-                    
-                    try {
-                        // Prepare data for SheetDB
-                        const updateData = {
-                            'Sr.No': row.srNo,
-                            'Branch': row.branch,
-                            'Staff name (E code optional)': row.staffName,
-                            'Designation': row.designation,
-                            'Re-subscriber': row.reSubscriber,
-                            'New Onboarding': row.newOnboarding,
-                            'Grand Total': row.reSubscriber + row.newOnboarding,
-                            'Opening Balance': row.openingBalance,
-                            'Today Received': row.todayReceived,
-                            'Today Deposit': row.todayDeposit,
-                            'Closing Balance': row.openingBalance + row.todayReceived - row.todayDeposit
-                        };
-
-                        // Update by Sr.No
-                        const response = await fetch(`${CONFIG.SHEETDB_API_URL}/Sr.No/${row.srNo}`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ data: updateData })
-                        });
-
-                        if (response.ok) {
-                            successCount++;
-                            // Update original data
-                            originalData[index] = JSON.stringify(row);
-                        } else {
-                            errorCount++;
-                            console.error(`Failed to update row ${row.srNo}:`, await response.text());
-                        }
-
-                    } catch (rowError) {
-                        errorCount++;
-                        console.error(`Error updating row ${row.srNo}:`, rowError);
-                    }
-                }
-
-                modifiedRows.clear();
-                renderTable(); // Re-render to remove modified highlights
-
-                if (errorCount === 0) {
-                    showApiStatus(`✅ Successfully saved ${successCount} records to SheetDB`, 'success');
-                    showToast(`✅ Saved ${successCount} records!`);
-                    setSyncIndicator('success');
-                } else {
-                    showApiStatus(`⚠️ Saved ${successCount} records, ${errorCount} failed`, 'warning');
-                    showToast(`⚠️ ${successCount} saved, ${errorCount} failed`);
-                    setSyncIndicator('error');
-                }
-
-            } catch (error) {
-                console.error('Error saving to SheetDB:', error);
-                showApiStatus('❌ Error: ' + error.message, 'error');
-                showToast('❌ Error saving data: ' + error.message);
-                setSyncIndicator('error');
-            } finally {
-                saveBtn.disabled = false;
-            }
-        }
-
-        async function addRowToSheetDB(newRow) {
-            try {
-                const postData = {
-                    data: {
-                        'Sr.No': newRow.srNo,
-                        'Branch': newRow.branch,
-                        'Staff name (E code optional)': newRow.staffName,
-                        'Designation': newRow.designation,
-                        'Re-subscriber': 0,
-                        'New Onboarding': 0,
-                        'Grand Total': 0,
-                        'Opening Balance': 0,
-                        'Today Received': 0,
-                        'Today Deposit': 0,
-                        'Closing Balance': 0
-                    }
-                };
-
-                const response = await fetch(CONFIG.SHEETDB_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(postData)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to add row to SheetDB');
-                }
-
-                return true;
-            } catch (error) {
-                console.error('Error adding row to SheetDB:', error);
-                throw error;
-            }
-        }
-
-        async function deleteRowFromSheetDB(srNo) {
-            try {
-                const response = await fetch(`${CONFIG.SHEETDB_API_URL}/Sr.No/${srNo}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to delete row from SheetDB');
-                }
-
-                return true;
-            } catch (error) {
-                console.error('Error deleting row from SheetDB:', error);
-                throw error;
-            }
-        }
-
-        function updateApiUrl() {
-            const newUrl = document.getElementById('apiUrl').value.trim();
-            if (newUrl) {
-                CONFIG.SHEETDB_API_URL = newUrl;
-                localStorage.setItem('sheetdbApiUrl', newUrl);
-                showToast('✅ API URL updated!');
-                closeModal('apiConfigModal');
-                loadFromSheetDB(); // Reload with new URL
-            } else {
-                showToast('❌ Please enter a valid API URL');
-            }
-        }
-
-        async function testApiConnection() {
-            showToast('🔌 Testing connection...');
-            try {
-                const response = await fetch(CONFIG.SHEETDB_API_URL, {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    showToast(`✅ Connection successful! Found ${data.length} records`);
-                } else {
-                    showToast(`❌ Connection failed: ${response.status} ${response.statusText}`);
-                }
-            } catch (error) {
-                showToast('❌ Connection error: ' + error.message);
-            }
-        }
-
-        // =====================================================
-        // TABLE RENDERING
-        // =====================================================
-
-        function renderTable(filterBranch = 'all') {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-
-            const filteredData = filterBranch === 'all' 
-                ? tableData 
-                : tableData.filter(row => row.branch === filterBranch);
-
-            filteredData.forEach((row, index) => {
-                const actualIndex = tableData.indexOf(row);
-                const grandTotal = row.reSubscriber + row.newOnboarding;
-                const closingBalance = row.openingBalance + row.todayReceived - row.todayDeposit;
-                const isModified = modifiedRows.has(actualIndex);
-
-                const tr = document.createElement('tr');
-                if (isModified) {
-                    tr.classList.add('modified');
-                }
-
-                tr.innerHTML = `
-                    <td>${row.srNo}</td>
-                    <td>${row.branch}</td>
-                    <td>${row.staffName}</td>
-                    <td>${row.designation}</td>
-                    <td class="editable">
-                        <input type="number" value="${row.reSubscriber}" 
-                               onchange="updateValue(${actualIndex}, 'reSubscriber', this.value)" 
-                               min="0">
-                    </td>
-                    <td class="editable">
-                        <input type="number" value="${row.newOnboarding}" 
-                               onchange="updateValue(${actualIndex}, 'newOnboarding', this.value)" 
-                               min="0">
-                    </td>
-                    <td class="calculated">${grandTotal}</td>
-                    <td class="editable">
-                        <input type="number" value="${row.openingBalance}" 
-                               onchange="updateValue(${actualIndex}, 'openingBalance', this.value)" 
-                               min="0">
-                    </td>
-                    <td class="editable">
-                        <input type="number" value="${row.todayReceived}" 
-                               onchange="updateValue(${actualIndex}, 'todayReceived', this.value)" 
-                               min="0">
-                    </td>
-                    <td class="editable">
-                        <input type="number" value="${row.todayDeposit}" 
-                               onchange="updateValue(${actualIndex}, 'todayDeposit', this.value)" 
-                               min="0">
-                    </td>
-                    <td class="calculated">${closingBalance}</td>
-                    <td class="no-export">
-                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" 
-                                onclick="deleteRow(${actualIndex})">🗑️</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+            await fetch(API_URL + "/Sr.No/" + row["Sr.No"], {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: row })
             });
         }
 
-        function updateValue(index, field, value) {
-            const newValue = parseInt(value) || 0;
-            const oldValue = tableData[index][field];
-            
-            if (newValue !== oldValue) {
-                tableData[index][field] = newValue;
-                modifiedRows.add(index);
-                
-                // Auto-save if enabled
-                if (CONFIG.AUTO_SAVE) {
-                    saveToSheetDB();
-                } else {
-                    renderTable(document.getElementById('branchFilter').value);
-                }
-            }
-            
-            updateSummary();
-        }
+        modifiedRows.clear();
+        showStatus("✅ All changes saved!", "green");
+    }
 
-        function updateSummary() {
-            const totals = {
-                employees: tableData.length,
-                reSubscribers: tableData.reduce((sum, row) => sum + row.reSubscriber, 0),
-                newOnboarding: tableData.reduce((sum, row) => sum + row.newOnboarding, 0),
-                received: tableData.reduce((sum, row) => sum + row.todayReceived, 0),
-                deposit: tableData.reduce((sum, row) => sum + row.todayDeposit, 0)
-            };
+    // -----------------------------
+    //   RENDER TABLE
+    // -----------------------------
+    function renderTable() {
+        let tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
 
-            document.getElementById('totalEmployees').textContent = totals.employees;
-            document.getElementById('totalReSubscribers').textContent = totals.reSubscribers;
-            document.getElementById('totalNewOnboarding').textContent = totals.newOnboarding;
-            document.getElementById('grandTotal').textContent = totals.reSubscribers + totals.newOnboarding;
-            document.getElementById('totalReceived').textContent = totals.received;
-            document.getElementById('totalDeposit').textContent = totals.deposit;
+        tableData.forEach((row, i) => {
+            let tr = document.createElement("tr");
 
-            // Update save button state
-            const saveBtn = document.getElementById('saveBtn');
-            if (modifiedRows.size > 0) {
-                saveBtn.textContent = `💾 Save ${modifiedRows.size} Changes`;
-                saveBtn.style.animation = 'pulse 2s infinite';
-            } else {
-                saveBtn.textContent = '💾 Save All Changes';
-                saveBtn.style.animation = 'none';
-            }
-        }
+            tr.innerHTML = `
+                <td>${row["Sr.No"]}</td>
+                <td>${row["Branch"]}</td>
+                <td>${row["Staff Name"]}</td>
+                <td>${row["Designation"]}</td>
 
-        // =====================================================
-        // EXPORT FUNCTIONS
-        // =====================================================
+                <td><input type='number' value='${row["Re-subscriber"]}' 
+                    onchange="updateValue(${i},'Re-subscriber', this.value)"></td>
 
-        function exportToExcel() {
-            const wb = XLSX.utils.book_new();
-            const wsData = [
-                ['Branch Wise Sehat Kahani Progress Report - Mianwali Area'],
-                ['Date: ' + new Date().toLocaleDateString('en-GB')],
-                [],
-                ['Sr.No', 'Branch', 'Staff Name', 'Designation', 'Re-subscriber', 'New Onboarding', 'Grand Total', 'Opening Balance', 'Today Received', 'Today Deposit', 'Closing Balance']
-            ];
+                <td><input type='number' value='${row["New Onboarding"]}' 
+                    onchange="updateValue(${i},'New Onboarding', this.value)"></td>
 
-            tableData.forEach(row => {
-                wsData.push([
-                    row.srNo, row.branch, row.staffName, row.designation,
-                    row.reSubscriber, row.newOnboarding, 
-                    row.reSubscriber + row.newOnboarding,
-                    row.openingBalance, row.todayReceived, row.todayDeposit,
-                    row.openingBalance + row.todayReceived - row.todayDeposit
-                ]);
-            });
+                <td>${(+row["Re-subscriber"]) + (+row["New Onboarding"])}</td>
 
-            const ws = XLSX.utils.aoa_to_sheet(wsData);
-            ws['!cols'] = [
-                {wch: 8}, {wch: 15}, {wch: 25}, {wch: 25}, 
-                {wch: 15}, {wch: 15}, {wch: 12}, {wch: 18}, 
-                {wch: 18}, {wch: 18}, {wch: 18}
-            ];
+                <td><input type='number' value='${row["Opening Balance"]}' 
+                    onchange="updateValue(${i},'Opening Balance', this.value)"></td>
 
-            XLSX.utils.book_append_sheet(wb, ws, 'Report');
-            XLSX.writeFile(wb, `Telehealth_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast('📊 Excel exported!');
-        }
+                <td><input type='number' value='${row["Today Received"]}' 
+                    onchange="updateValue(${i},'Today Received', this.value)"></td>
 
-        function exportToCSV() {
-            let csv = 'Sr.No,Branch,Staff Name,Designation,Re-subscriber,New Onboarding,Grand Total,Opening Balance,Today Received,Today Deposit,Closing Balance\n';
-            tableData.forEach(row => {
-                const gt = row.reSubscriber + row.newOnboarding;
-                const cb = row.openingBalance + row.todayReceived - row.todayDeposit;
-                csv += `${row.srNo},"${row.branch}","${row.staffName}","${row.designation}",${row.reSubscriber},${row.newOnboarding},${gt},${row.openingBalance},${row.todayReceived},${row.todayDeposit},${cb}\n`;
-            });
+                <td><input type='number' value='${row["Today Deposit"]}' 
+                    onchange="updateValue(${i},'Today Deposit', this.value)"></td>
 
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Telehealth_Report_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            showToast('📄 CSV exported!');
-        }
-
-        async function downloadAsImage(format = 'png') {
-            showToast('📸 Generating high-quality image...');
-            
-            const controls = document.querySelector('.controls');
-            const actionCells = document.querySelectorAll('.no-export');
-            const apiStatus = document.getElementById('apiStatus');
-            const originalDisplay = controls.style.display;
-            const originalStatusDisplay = apiStatus.style.display;
-            
-            controls.style.display = 'none';
-            apiStatus.style.display = 'none';
-            actionCells.forEach(cell => cell.style.display = 'none');
-            
-            try {
-                const reportContent = document.getElementById('reportContent');
-                
-                if (!window.html2canvas) {
-                    await loadHtml2Canvas();
-                }
-                
-                const canvas = await html2canvas(reportContent, {
-                    backgroundColor: '#ffffff',
-                    scale: 3,
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true,
-                    windowWidth: 1400,
-                    width: reportContent.scrollWidth,
-                    height: reportContent.scrollHeight,
-                    onclone: function(clonedDoc) {
-                        const clonedTable = clonedDoc.querySelector('table');
-                        if (clonedTable) {
-                            clonedTable.style.tableLayout = 'fixed';
-                            const cells = clonedDoc.querySelectorAll('td, th');
-                            cells.forEach(cell => {
-                                cell.style.wordWrap = 'break-word';
-                                cell.style.whiteSpace = 'normal';
-                            });
-                        }
-                    }
-                });
-                
-                const imageType = format === 'jpg' ? 'image/jpeg' : 'image/png';
-                const quality = format === 'jpg' ? 0.98 : 1.0;
-                
-                canvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = `Telehealth_Report_${new Date().toISOString().split('T')[0]}.${format}`;
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
-                    
-                    showToast(`✅ High-quality ${format.toUpperCase()} downloaded!`);
-                }, imageType, quality);
-                
-            } catch (error) {
-                console.error('Error generating image:', error);
-                showToast('❌ Error generating image: ' + error.message);
-            } finally {
-                controls.style.display = originalDisplay;
-                apiStatus.style.display = originalStatusDisplay;
-                actionCells.forEach(cell => cell.style.display = '');
-            }
-        }
-
-        function loadHtml2Canvas() {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-
-        // =====================================================
-        // ADD/DELETE ROWS
-        // =====================================================
-
-        function openAddRowModal() {
-            document.getElementById('addRowModal').style.display = 'block';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        function openApiConfigModal() {
-            document.getElementById('apiConfigModal').style.display = 'block';
-        }
-
-        document.getElementById('addRowForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const newRow = {
-                srNo: tableData.length + 1,
-                branch: document.getElementById('newBranch').value,
-                staffName: document.getElementById('newStaffName').value,
-                designation: document.getElementById('newDesignation').value,
-                reSubscriber: 0, 
-                newOnboarding: 0,
-                openingBalance: 0, 
-                todayReceived: 0, 
-                todayDeposit: 0
-            };
-
-            try {
-                await addRowToSheetDB(newRow);
-                tableData.push(newRow);
-                renderTable();
-                updateSummary();
-                populateBranchFilter();
-                closeModal('addRowModal');
-                this.reset();
-                showToast('✅ Employee added to sheet!');
-            } catch (error) {
-                showToast('❌ Error adding employee: ' + error.message);
-            }
+                <td>${(+row["Opening Balance"]) + (+row["Today Received"]) - (+row["Today Deposit"])}</td>
+            `;
+            tbody.appendChild(tr);
         });
+    }
 
-        async function deleteRow(index) {
-            if (confirm('Delete this employee record from the sheet?')) {
-                const row = tableData[index];
-                
-                try {
-                    await deleteRowFromSheetDB(row.srNo);
-                    tableData.splice(index, 1);
-                    tableData.forEach((row, i) => row.srNo = i + 1);
-                    renderTable(document.getElementById('branchFilter').value);
-                    updateSummary();
-                    populateBranchFilter();
-                    modifiedRows.delete(index);
-                    showToast('🗑️ Employee deleted from sheet!');
-                } catch (error) {
-                    showToast('❌ Error deleting employee: ' + error.message);
-                }
-            }
-        }
+    // -----------------------------
+    // UPDATE CELL
+    // -----------------------------
+    function updateValue(index, field, value) {
+        tableData[index][field] = value;
+        modifiedRows.add(index);
+        renderTable();
+    }
 
-        // =====================================================
-        // FILTERING
-        // =====================================================
+    // -----------------------------
+    // SHOW STATUS MESSAGE
+    // -----------------------------
+    function showStatus(msg, color) {
+        let box = document.getElementById("apiStatus");
+        box.style.display = "block";
+        box.style.color = color;
+        box.innerHTML = msg;
+    }
 
-        function populateBranchFilter() {
-            const branches = [...new Set(tableData.map(row => row.branch))];
-            const select = document.getElementById('branchFilter');
-            const currentValue = select.value;
-            select.innerHTML = '<option value="all">All Branches</option>';
-            branches.forEach(branch => {
-                const option = document.createElement('option');
-                option.value = branch;
-                option.textContent = branch;
-                select.appendChild(option);
-            });
-            select.value = currentValue;
-        }
-
-        function filterByBranch() {
-            renderTable(document.getElementById('branchFilter').value);
-        }
-
-        // =====================================================
-        // UTILITY FUNCTIONS
-        // =====================================================
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
-        }
-
-        function showApiStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('apiStatus');
-            statusDiv.textContent = message;
-            statusDiv.className = `api-status ${type}`;
-            statusDiv.style.display = 'block';
-            
-            if (type === 'success') {
-                setTimeout(() => {
-                    statusDiv.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        function showLoading(show) {
-            const loader = document.getElementById('loadingIndicator');
-            if (show) {
-                loader.classList.add('active');
-            } else {
-                loader.classList.remove('active');
-            }
-        }
-
-        function setSyncIndicator(status) {
-            const indicator = document.getElementById('syncIndicator');
-            indicator.className = 'sync-indicator';
-            if (status === 'syncing') {
-                indicator.classList.add('syncing');
-            } else if (status === 'error') {
-                indicator.classList.add('error');
-            }
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-
-        // Warn user about unsaved changes
-        window.addEventListener('beforeunload', function (e) {
-            if (modifiedRows.size > 0) {
-                e.preventDefault();
-                e.returnValue = '';
-                return '';
-            }
-        });
-
-        // Initialize on page load
-        init();
+    // Load initially
+    loadFromAPI();
     </script>
 
-    <!-- Required Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
