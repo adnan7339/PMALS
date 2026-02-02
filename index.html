@@ -142,6 +142,7 @@
 
         .table-container {
             overflow-x: auto;
+            margin-top: 20px;
         }
 
         table {
@@ -161,12 +162,14 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            white-space: nowrap;
         }
 
         td {
             padding: 12px 10px;
-            border-bottom: 1px solid #e0e0e0;
+            border: 1px solid #e0e0e0;
             font-size: 14px;
+            vertical-align: middle;
         }
 
         tr:hover {
@@ -237,184 +240,177 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
         }
 
         .modal-content {
             background: white;
-            margin: 50px auto;
+            margin: 10% auto;
             padding: 30px;
             border-radius: 15px;
             width: 90%;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-height: 80vh;
-            overflow-y: auto;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .close {
-            font-size: 32px;
+            color: #aaa;
+            float: right;
+            font-size: 28px;
             font-weight: bold;
             cursor: pointer;
-            color: #999;
-            transition: color 0.3s;
         }
 
         .close:hover {
-            color: #333;
+            color: #000;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: 600;
             color: #333;
         }
 
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: #4CAF50;
-            color: white;
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: none;
-            z-index: 2000;
-            animation: slideIn 0.3s ease;
+            font-size: 14px;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #323232;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            display: none;
+            animation: slideUp 0.3s;
+            z-index: 2000;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .loading {
+            display: none;
             text-align: center;
-            padding: 40px;
+            padding: 20px;
             font-size: 18px;
             color: #666;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #2196F3;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media print {
-            .controls, .btn {
-                display: none !important;
-            }
-            
-            body {
-                background: white;
-                padding: 0;
-            }
-
-            .container {
-                box-shadow: none;
-            }
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 10px;
-            align-items: center;
         }
 
         select {
             padding: 10px;
             border: 2px solid #ddd;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 14px;
-            background: white;
             cursor: pointer;
         }
 
-        select:focus {
-            outline: none;
-            border-color: #4CAF50;
+        .no-export {
+            /* Column that won't be exported */
         }
 
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #2196F3;
-            padding: 15px;
-            margin: 15px 0;
+        @media print {
+            .controls, .no-export {
+                display: none !important;
+            }
+        }
+
+        /* Google Sheets Status */
+        .sheets-status {
+            padding: 10px 20px;
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            margin: 10px 0;
             border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .sheets-status.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+
+        .sheets-status.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏥 Branch Wise Sehat Kahani Progress Report</h1>
-            <div class="date-display" id="reportDate">Mianwali Area - Dated: <span id="currentDate"></span></div>
+            <h1>🏥 Sehat Kahani - Tele Health Progress Report</h1>
+            <div class="date-display" id="currentDate"></div>
         </div>
 
         <div class="controls">
-            <button class="btn btn-success" onclick="loadFromGoogleDrive()">
-                📥 Load from Google Drive
+            <button class="btn btn-success" onclick="loadFromGoogleSheets()">
+                📊 Load from Google Sheets
             </button>
-            <button class="btn btn-primary" onclick="saveData()">💾 Save Locally</button>
-            
-            <!-- Image Export Buttons -->
-            <button class="btn btn-info" onclick="downloadAsImage('png')">
-                🖼️ Download as PNG
+            <button class="btn btn-success" onclick="saveToGoogleSheets()">
+                💾 Save to Google Sheets
             </button>
-            <button class="btn btn-info" onclick="downloadAsImage('jpg')">
-                📸 Download as JPG
+            <button class="btn btn-primary" onclick="saveData()">
+                💾 Save Locally
             </button>
-            
-            <button class="btn btn-secondary" onclick="exportToExcel()">📊 Excel</button>
-            <button class="btn btn-warning" onclick="exportToCSV()">📄 CSV</button>
-            <button class="btn btn-danger" onclick="resetData()">🔄 Reset</button>
-            <button class="btn btn-primary" onclick="openAddRowModal()">➕ Add Row</button>
-            
-            <div class="filter-section">
-                <label for="branchFilter">Branch:</label>
-                <select id="branchFilter" onchange="filterByBranch()">
-                    <option value="all">All Branches</option>
-                </select>
-            </div>
+            <button class="btn btn-secondary" onclick="exportToExcel()">
+                📥 Export Excel
+            </button>
+            <button class="btn btn-secondary" onclick="exportToCSV()">
+                📄 Export CSV
+            </button>
+            <button class="btn btn-warning" onclick="downloadAsImage('png')">
+                🖼️ PNG
+            </button>
+            <button class="btn btn-warning" onclick="downloadAsImage('jpg')">
+                📷 JPG
+            </button>
+            <button class="btn btn-info" onclick="openAddRowModal()">
+                ➕ Add Employee
+            </button>
+            <button class="btn btn-info" onclick="openGoogleDriveModal()">
+                ⚙️ Configure Google Sheet
+            </button>
+            <select id="branchFilter" onchange="filterByBranch()">
+                <option value="all">All Branches</option>
+            </select>
+            <button class="btn btn-danger" onclick="resetData()">
+                🔄 Reset
+            </button>
         </div>
 
-        <div id="reportContent">
-            <div id="loadingIndicator" class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>Loading data from Google Drive...</p>
-            </div>
+        <div id="sheetsStatus" class="sheets-status" style="display:none;"></div>
 
+        <div id="reportContent">
+            <div class="loading" id="loadingIndicator">
+                ⏳ Loading data...
+            </div>
+            
             <div class="table-container">
                 <table id="dataTable">
                     <thead>
@@ -437,8 +433,32 @@
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <div class="summary" id="summary">
+        <div class="summary">
+            <div class="summary-item">
+                <h3>Total Employees</h3>
+                <div class="value" id="totalEmployees">0</div>
+            </div>
+            <div class="summary-item">
+                <h3>Total Re-subscribers</h3>
+                <div class="value" id="totalReSubscribers">0</div>
+            </div>
+            <div class="summary-item">
+                <h3>Total New Onboarding</h3>
+                <div class="value" id="totalNewOnboarding">0</div>
+            </div>
+            <div class="summary-item">
+                <h3>Grand Total</h3>
+                <div class="value" id="grandTotal">0</div>
+            </div>
+            <div class="summary-item">
+                <h3>Total Cash Received</h3>
+                <div class="value" id="totalReceived">0</div>
+            </div>
+            <div class="summary-item">
+                <h3>Total Deposit</h3>
+                <div class="value" id="totalDeposit">0</div>
             </div>
         </div>
     </div>
@@ -446,10 +466,8 @@
     <!-- Add Row Modal -->
     <div id="addRowModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Add New Employee</h2>
-                <span class="close" onclick="closeModal('addRowModal')">&times;</span>
-            </div>
+            <span class="close" onclick="closeModal('addRowModal')">&times;</span>
+            <h2>➕ Add New Employee</h2>
             <form id="addRowForm">
                 <div class="form-group">
                     <label>Branch:</label>
@@ -463,93 +481,301 @@
                     <label>Designation:</label>
                     <input type="text" id="newDesignation" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Employee</button>
+                <button type="submit" class="btn btn-success">Add Employee</button>
             </form>
         </div>
     </div>
 
-    <!-- Google Drive Setup Modal -->
+    <!-- Google Drive Configuration Modal -->
     <div id="googleDriveModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>📋 Google Drive Setup</h2>
-                <span class="close" onclick="closeModal('googleDriveModal')">&times;</span>
-            </div>
-            
-            <div class="info-box">
-                <strong>Current Google Drive File ID:</strong>
-                <p id="currentFileId" style="word-break: break-all; margin-top: 5px; font-family: monospace;">
-                    1DnhceOFQhh6F6ndX4VJDZn1KbYhDwu1F
+            <span class="close" onclick="closeModal('googleDriveModal')">&times;</span>
+            <h2>⚙️ Configure Google Sheets</h2>
+            <div class="form-group">
+                <label>Google Sheet ID:</label>
+                <input type="text" id="googleSheetId" value="1lzZT5wK014u2CTZlEMIiE9UUa3NE-mXR" placeholder="Enter Google Sheet ID">
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    Copy the ID from your Google Sheets URL:<br>
+                    <code>https://docs.google.com/spreadsheets/d/<strong>[THIS_IS_THE_ID]</strong>/edit</code>
                 </p>
             </div>
-
-            <div class="form-group">
-                <label>Update File ID (optional):</label>
-                <input type="text" id="newFileId" placeholder="Paste new Google Drive file ID">
-                <small style="color: #666; display: block; margin-top: 5px;">
-                    Extract ID from URL: https://drive.google.com/file/d/<strong>FILE_ID</strong>/view
-                </small>
-            </div>
-
-            <button class="btn btn-primary" onclick="updateFileId()" style="width: 100%; margin-top: 10px;">
-                💾 Update File ID
-            </button>
+            <button class="btn btn-success" onclick="updateGoogleSheetId()">Save Configuration</button>
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast"></div>
 
     <script>
-        // Configuration
+        // =====================================================
+        // CONFIGURATION
+        // =====================================================
+        
         const CONFIG = {
-            GOOGLE_DRIVE_FILE_ID: '1DnhceOFQhh6F6ndX4VJDZn1KbYhDwu1F',
-            // Convert to direct download link
-            get GOOGLE_DRIVE_URL() {
-                return `https://drive.google.com/uc?export=download&id=${this.GOOGLE_DRIVE_FILE_ID}`;
-            }
+            GOOGLE_SHEET_ID: localStorage.getItem('googleSheetId') || '1lzZT5wK014u2CTZlEMIiE9UUa3NE-mXR',
+            SHEET_NAME: 'Sheet1' // Default sheet name
         };
 
-        // Initial data
-        let tableData = [
-            {srNo: 1, branch: "Mianwali-1", staffName: "Muhammad Sijad", designation: "Assistant Branch Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 2, branch: "Mianwali-1", staffName: "Zafar Iqbal", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 3, branch: "Mianwali-1", staffName: "Karam Elahi", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 4, branch: "Mianwali-1", staffName: "Shahid Abbas", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 5, branch: "Mianwali-1", staffName: "Nadeem Abbas", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 6, branch: "Mianwali-1", staffName: "Muhammad Usama Hassan Khan", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 7, branch: "Mianwali-2", staffName: "Zain Ul Islam", designation: "Assistant Branch Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 8, branch: "Mianwali-2", staffName: "Muhammad Arif Khan", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 9, branch: "Mianwali-2", staffName: "Muhammad Touqeer Iqbal", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 10, branch: "Mosa Khail (MSK)", staffName: "Tanveer Hayat", designation: "Branch Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 11, branch: "Mosa Khail (MSK)", staffName: "Muhammad Umair", designation: "Assistant Branch Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0},
-            {srNo: 12, branch: "Mosa Khail (MSK)", staffName: "Jawad Usman Khan", designation: "Unit Manager", reSubscriber: 0, newOnboarding: 0, openingBalance: 0, todayReceived: 0, todayDeposit: 0}
+        // =====================================================
+        // DATA FROM EXCEL FILE
+        // =====================================================
+        
+        const INITIAL_DATA = [
+            {"srNo": 1, "branch": "Mianwali-1", "staffName": "Muhammad Sijad", "designation": "Assistant Branch Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 2, "branch": "Mianwali-1", "staffName": "Zafar Iqbal", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 3, "branch": "Mianwali-1", "staffName": "Karam Elahi", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 4, "branch": "Mianwali-1", "staffName": "Shahid Abbas", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 5, "branch": "Mianwali-1", "staffName": "Nadeem Abbas", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 6, "branch": "Mianwali-1", "staffName": "Arslan Haider", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 7, "branch": "Mianwali-2", "staffName": "Javed Iqbal", "designation": "Assistant Branch Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 8, "branch": "Mianwali-2", "staffName": "Ashfaq Hussain", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 9, "branch": "Mianwali-2", "staffName": "Naveed Anwar", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 10, "branch": "Mianwali-2", "staffName": "Muhammad Arshad", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 11, "branch": "Mianwali-2", "staffName": "Atif Ahmed", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 12, "branch": "Mianwali-2", "staffName": "Jawad Chohan", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 13, "branch": "Piplan", "staffName": "Muhammad Faryad", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 14, "branch": "Piplan", "staffName": "Umair Khizar", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 15, "branch": "Piplan", "staffName": "Kashif Masood", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 16, "branch": "Piplan", "staffName": "Ali Raza", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 17, "branch": "Piplan", "staffName": "Muhammad Akram", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 18, "branch": "Piplan", "staffName": "Muhammad Sabih", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 19, "branch": "Essa Khail", "staffName": "Imran Elahi", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 20, "branch": "Essa Khail", "staffName": "Asad Latif", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 21, "branch": "Essa Khail", "staffName": "Yaqoob Shahzad", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 22, "branch": "Essa Khail", "staffName": "Waqas Shahzad", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 23, "branch": "Essa Khail", "staffName": "Shamraiz Hassan", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 24, "branch": "Essa Khail", "staffName": "Shahbaz Aslam", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0},
+            {"srNo": 25, "branch": "Essa Khail", "staffName": "Muhammad Tahir", "designation": "Unit Manager", "reSubscriber": 0, "newOnboarding": 0, "openingBalance": 0, "todayReceived": 0, "todayDeposit": 0}
         ];
 
-        // Initialize
+        let tableData = [];
+
+        // =====================================================
+        // INITIALIZATION
+        // =====================================================
+
         function init() {
-            updateCurrentDate();
-            loadData();
-        }
-
-        function updateCurrentDate() {
+            // Display current date
             const today = new Date();
-            const formatted = today.toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            document.getElementById('currentDate').textContent = formatted;
-        }
+            document.getElementById('currentDate').textContent = 
+                today.toLocaleDateString('en-GB', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
 
-        function loadData() {
-            const saved = localStorage.getItem('telehealthData');
-            if (saved) {
-                tableData = JSON.parse(saved);
+            // Load data
+            const savedData = localStorage.getItem('telehealthData');
+            if (savedData) {
+                tableData = JSON.parse(savedData);
+            } else {
+                tableData = [...INITIAL_DATA];
             }
+
             renderTable();
             updateSummary();
             populateBranchFilter();
+
+            // Load saved Google Sheet ID
+            const savedSheetId = localStorage.getItem('googleSheetId');
+            if (savedSheetId) {
+                document.getElementById('googleSheetId').value = savedSheetId;
+            }
         }
+
+        // =====================================================
+        // GOOGLE SHEETS INTEGRATION
+        // =====================================================
+
+        function updateGoogleSheetId() {
+            const sheetId = document.getElementById('googleSheetId').value.trim();
+            if (sheetId) {
+                CONFIG.GOOGLE_SHEET_ID = sheetId;
+                localStorage.setItem('googleSheetId', sheetId);
+                showToast('✅ Google Sheet ID updated!');
+                closeModal('googleDriveModal');
+            } else {
+                showToast('❌ Please enter a valid Sheet ID');
+            }
+        }
+
+        async function loadFromGoogleSheets() {
+            showSheetsStatus('Loading from Google Sheets...', 'warning');
+            
+            try {
+                // Construct the CSV export URL
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.GOOGLE_SHEET_ID}/export?format=csv&gid=0`;
+                
+                showToast('📥 Fetching data from Google Sheets...');
+                
+                const response = await fetch(csvUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Google Sheets. Make sure the sheet is shared as "Anyone with the link can view"');
+                }
+                
+                const csvText = await response.text();
+                const rows = parseCSV(csvText);
+                
+                if (rows.length < 3) {
+                    throw new Error('Sheet appears to be empty or has invalid format');
+                }
+                
+                // Parse the data (skip header rows)
+                const newData = [];
+                for (let i = 2; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row[0] || row[0] === 'Total' || row[0] === '') continue;
+                    
+                    try {
+                        const record = {
+                            srNo: parseInt(row[0]) || i - 1,
+                            branch: row[1] || '',
+                            staffName: row[2] || '',
+                            designation: row[3] || '',
+                            reSubscriber: parseInt(row[4]) || 0,
+                            newOnboarding: parseInt(row[5]) || 0,
+                            openingBalance: parseInt(row[7]) || 0,
+                            todayReceived: parseInt(row[8]) || 0,
+                            todayDeposit: parseInt(row[9]) || 0
+                        };
+                        newData.push(record);
+                    } catch (e) {
+                        console.warn('Skipping row', i, ':', e);
+                    }
+                }
+                
+                if (newData.length === 0) {
+                    throw new Error('No valid data found in the sheet');
+                }
+                
+                tableData = newData;
+                renderTable();
+                updateSummary();
+                populateBranchFilter();
+                saveData();
+                
+                showSheetsStatus(`✅ Successfully loaded ${newData.length} records from Google Sheets`, 'success');
+                showToast(`✅ Loaded ${newData.length} records from Google Sheets!`);
+                
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                showSheetsStatus('❌ Error: ' + error.message, 'error');
+                showToast('❌ Error: ' + error.message);
+            }
+        }
+
+        async function saveToGoogleSheets() {
+            showSheetsStatus('Saving to Google Sheets requires Google Apps Script...', 'warning');
+            showToast('⚠️ Direct save requires Google Apps Script setup');
+            
+            // Show instructions
+            const instructions = `
+To enable saving to Google Sheets:
+
+1. Open your Google Sheet: 
+   https://docs.google.com/spreadsheets/d/${CONFIG.GOOGLE_SHEET_ID}/edit
+
+2. Go to Extensions → Apps Script
+
+3. Replace all code with the following:
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  
+  // Clear existing data (keep headers)
+  var lastRow = sheet.getLastRow();
+  if (lastRow > 2) {
+    sheet.getRange(3, 1, lastRow - 2, 11).clearContent();
+  }
+  
+  // Write new data
+  data.forEach(function(row, index) {
+    sheet.getRange(index + 3, 1, 1, 11).setValues([[
+      row.srNo, row.branch, row.staffName, row.designation,
+      row.reSubscriber, row.newOnboarding, 
+      row.reSubscriber + row.newOnboarding,
+      row.openingBalance, row.todayReceived, row.todayDeposit,
+      row.openingBalance + row.todayReceived - row.todayDeposit
+    ]]);
+  });
+  
+  return ContentService.createTextOutput(JSON.stringify({success: true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+4. Click "Deploy" → "New deployment"
+5. Select "Web app"
+6. Set "Execute as: Me"
+7. Set "Who has access: Anyone"
+8. Click "Deploy" and copy the Web App URL
+9. Update CONFIG.APPS_SCRIPT_URL with your URL
+
+For now, use "Export Excel" to save your changes!
+            `;
+            
+            alert(instructions);
+        }
+
+        function parseCSV(text) {
+            const rows = [];
+            let currentRow = [];
+            let currentCell = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+                
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        currentCell += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    currentRow.push(currentCell.trim());
+                    currentCell = '';
+                } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                    if (currentCell || currentRow.length > 0) {
+                        currentRow.push(currentCell.trim());
+                        rows.push(currentRow);
+                        currentRow = [];
+                        currentCell = '';
+                    }
+                    if (char === '\r' && nextChar === '\n') {
+                        i++;
+                    }
+                } else {
+                    currentCell += char;
+                }
+            }
+            
+            if (currentCell || currentRow.length > 0) {
+                currentRow.push(currentCell.trim());
+                rows.push(currentRow);
+            }
+            
+            return rows;
+        }
+
+        function showSheetsStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('sheetsStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = `sheets-status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // =====================================================
+        // TABLE RENDERING
+        // =====================================================
 
         function renderTable(filterBranch = 'all') {
             const tbody = document.getElementById('tableBody');
@@ -559,189 +785,93 @@
                 ? tableData 
                 : tableData.filter(row => row.branch === filterBranch);
 
-            filteredData.forEach((row) => {
-                const tr = document.createElement('tr');
+            filteredData.forEach((row, index) => {
+                const actualIndex = tableData.indexOf(row);
                 const grandTotal = row.reSubscriber + row.newOnboarding;
                 const closingBalance = row.openingBalance + row.todayReceived - row.todayDeposit;
-                
+
+                const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.srNo}</td>
-                    <td><input type="text" value="${row.branch}" onchange="updateCell(${tableData.indexOf(row)}, 'branch', this.value)" class="editable"></td>
-                    <td><input type="text" value="${row.staffName}" onchange="updateCell(${tableData.indexOf(row)}, 'staffName', this.value)" class="editable"></td>
-                    <td><input type="text" value="${row.designation}" onchange="updateCell(${tableData.indexOf(row)}, 'designation', this.value)" class="editable"></td>
-                    <td><input type="number" value="${row.reSubscriber}" onchange="updateCell(${tableData.indexOf(row)}, 'reSubscriber', parseFloat(this.value) || 0)" class="editable"></td>
-                    <td><input type="number" value="${row.newOnboarding}" onchange="updateCell(${tableData.indexOf(row)}, 'newOnboarding', parseFloat(this.value) || 0)" class="editable"></td>
+                    <td>${row.branch}</td>
+                    <td>${row.staffName}</td>
+                    <td>${row.designation}</td>
+                    <td class="editable">
+                        <input type="number" value="${row.reSubscriber}" 
+                               onchange="updateValue(${actualIndex}, 'reSubscriber', this.value)" 
+                               min="0">
+                    </td>
+                    <td class="editable">
+                        <input type="number" value="${row.newOnboarding}" 
+                               onchange="updateValue(${actualIndex}, 'newOnboarding', this.value)" 
+                               min="0">
+                    </td>
                     <td class="calculated">${grandTotal}</td>
-                    <td><input type="number" value="${row.openingBalance}" onchange="updateCell(${tableData.indexOf(row)}, 'openingBalance', parseFloat(this.value) || 0)" class="editable"></td>
-                    <td><input type="number" value="${row.todayReceived}" onchange="updateCell(${tableData.indexOf(row)}, 'todayReceived', parseFloat(this.value) || 0)" class="editable"></td>
-                    <td><input type="number" value="${row.todayDeposit}" onchange="updateCell(${tableData.indexOf(row)}, 'todayDeposit', parseFloat(this.value) || 0)" class="editable"></td>
+                    <td class="editable">
+                        <input type="number" value="${row.openingBalance}" 
+                               onchange="updateValue(${actualIndex}, 'openingBalance', this.value)" 
+                               min="0">
+                    </td>
+                    <td class="editable">
+                        <input type="number" value="${row.todayReceived}" 
+                               onchange="updateValue(${actualIndex}, 'todayReceived', this.value)" 
+                               min="0">
+                    </td>
+                    <td class="editable">
+                        <input type="number" value="${row.todayDeposit}" 
+                               onchange="updateValue(${actualIndex}, 'todayDeposit', this.value)" 
+                               min="0">
+                    </td>
                     <td class="calculated">${closingBalance}</td>
-                    <td class="no-export"><button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteRow(${tableData.indexOf(row)})">🗑️</button></td>
+                    <td class="no-export">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" 
+                                onclick="deleteRow(${actualIndex})">🗑️</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function updateCell(rowIndex, field, value) {
-            tableData[rowIndex][field] = value;
-            renderTable(document.getElementById('branchFilter').value);
+        function updateValue(index, field, value) {
+            tableData[index][field] = parseInt(value) || 0;
             updateSummary();
         }
 
+        function updateSummary() {
+            const totals = {
+                employees: tableData.length,
+                reSubscribers: tableData.reduce((sum, row) => sum + row.reSubscriber, 0),
+                newOnboarding: tableData.reduce((sum, row) => sum + row.newOnboarding, 0),
+                received: tableData.reduce((sum, row) => sum + row.todayReceived, 0),
+                deposit: tableData.reduce((sum, row) => sum + row.todayDeposit, 0)
+            };
+
+            document.getElementById('totalEmployees').textContent = totals.employees;
+            document.getElementById('totalReSubscribers').textContent = totals.reSubscribers;
+            document.getElementById('totalNewOnboarding').textContent = totals.newOnboarding;
+            document.getElementById('grandTotal').textContent = totals.reSubscribers + totals.newOnboarding;
+            document.getElementById('totalReceived').textContent = totals.received;
+            document.getElementById('totalDeposit').textContent = totals.deposit;
+        }
+
+        // =====================================================
+        // DATA MANAGEMENT
+        // =====================================================
+
         function saveData() {
             localStorage.setItem('telehealthData', JSON.stringify(tableData));
-            showToast('✅ Data saved locally!');
+            showToast('💾 Data saved locally!');
         }
 
-        function updateSummary() {
-            const summary = document.getElementById('summary');
-            let totalReSubscriber = 0, totalNewOnboarding = 0, totalGrandTotal = 0, totalCash = 0;
-
-            tableData.forEach(row => {
-                totalReSubscriber += row.reSubscriber;
-                totalNewOnboarding += row.newOnboarding;
-                totalGrandTotal += row.reSubscriber + row.newOnboarding;
-                totalCash += (row.openingBalance + row.todayReceived - row.todayDeposit);
-            });
-
-            summary.innerHTML = `
-                <div class="summary-item">
-                    <h3>Total Re-Subscribers</h3>
-                    <div class="value">${totalReSubscriber}</div>
-                </div>
-                <div class="summary-item">
-                    <h3>Total New Onboarding</h3>
-                    <div class="value">${totalNewOnboarding}</div>
-                </div>
-                <div class="summary-item">
-                    <h3>Grand Total Members</h3>
-                    <div class="value">${totalGrandTotal}</div>
-                </div>
-                <div class="summary-item">
-                    <h3>Total Cash in Hand</h3>
-                    <div class="value">Rs. ${totalCash.toLocaleString()}</div>
-                </div>
-            `;
-        }
-
-        // =====================================================
-        // GOOGLE DRIVE INTEGRATION
-        // =====================================================
-        
-        async function loadFromGoogleDrive() {
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            
-            try {
-                loadingIndicator.style.display = 'block';
-                showToast('📥 Loading from Google Drive...');
-                
-                // Note: Due to CORS restrictions, direct fetch might not work
-                // Alternative: User needs to make the file public and accessible
-                
-                showToast('⚠️ Please ensure your Google Drive file is publicly accessible');
-                
-                // For demonstration, showing how to parse Excel from Google Drive
-                // In production, you might need to use Google Drive API or make file public
-                
-                // Alternative approach: Show instructions
-                setTimeout(() => {
-                    loadingIndicator.style.display = 'none';
-                    alert('Google Drive Integration Instructions:\n\n' +
-                          '1. Open your Google Drive file\n' +
-                          '2. File → Download → Microsoft Excel (.xlsx)\n' +
-                          '3. Open this dashboard\n' +
-                          '4. Use "Import from Excel" feature (coming soon)\n\n' +
-                          'OR\n\n' +
-                          'Convert your Google Sheet to Google Apps Script for direct integration.');
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Error loading from Google Drive:', error);
-                loadingIndicator.style.display = 'none';
-                showToast('❌ Error: ' + error.message);
-            }
-        }
-
-        function updateFileId() {
-            const newId = document.getElementById('newFileId').value.trim();
-            if (newId) {
-                CONFIG.GOOGLE_DRIVE_FILE_ID = newId;
-                localStorage.setItem('googleDriveFileId', newId);
-                document.getElementById('currentFileId').textContent = newId;
-                showToast('✅ File ID updated!');
-                closeModal('googleDriveModal');
+        function resetData() {
+            if (confirm('Reset all data to original values? This cannot be undone.')) {
+                localStorage.removeItem('telehealthData');
+                location.reload();
             }
         }
 
         // =====================================================
-        // IMAGE EXPORT FUNCTIONALITY
-        // =====================================================
-        
-        async function downloadAsImage(format = 'png') {
-            showToast('📸 Generating image...');
-            
-            // Hide controls and action columns temporarily
-            const controls = document.querySelector('.controls');
-            const actionCells = document.querySelectorAll('.no-export');
-            const originalDisplay = controls.style.display;
-            
-            controls.style.display = 'none';
-            actionCells.forEach(cell => cell.style.display = 'none');
-            
-            try {
-                // Use html2canvas library
-                const reportContent = document.getElementById('reportContent');
-                
-                // Import html2canvas dynamically
-                if (!window.html2canvas) {
-                    await loadHtml2Canvas();
-                }
-                
-                const canvas = await html2canvas(reportContent, {
-                    backgroundColor: '#ffffff',
-                    scale: 2, // Higher quality
-                    logging: false,
-                    windowWidth: reportContent.scrollWidth,
-                    windowHeight: reportContent.scrollHeight
-                });
-                
-                // Convert to image
-                const imageType = format === 'jpg' ? 'image/jpeg' : 'image/png';
-                const quality = format === 'jpg' ? 0.95 : 1.0;
-                
-                canvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = `Telehealth_Report_${new Date().toISOString().split('T')[0]}.${format}`;
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
-                    
-                    showToast(`✅ Image downloaded as ${format.toUpperCase()}!`);
-                }, imageType, quality);
-                
-            } catch (error) {
-                console.error('Error generating image:', error);
-                showToast('❌ Error generating image: ' + error.message);
-            } finally {
-                // Restore original display
-                controls.style.display = originalDisplay;
-                actionCells.forEach(cell => cell.style.display = '');
-            }
-        }
-
-        function loadHtml2Canvas() {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-
-        // =====================================================
-        // OTHER FUNCTIONS
+        // EXPORT FUNCTIONS
         // =====================================================
 
         function exportToExcel() {
@@ -764,6 +894,14 @@
             });
 
             const ws = XLSX.utils.aoa_to_sheet(wsData);
+            
+            // Set column widths
+            ws['!cols'] = [
+                {wch: 8}, {wch: 15}, {wch: 25}, {wch: 25}, 
+                {wch: 15}, {wch: 15}, {wch: 12}, {wch: 18}, 
+                {wch: 18}, {wch: 18}, {wch: 18}
+            ];
+
             XLSX.utils.book_append_sheet(wb, ws, 'Report');
             XLSX.writeFile(wb, `Telehealth_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
             showToast('📊 Excel exported!');
@@ -786,19 +924,87 @@
             showToast('📄 CSV exported!');
         }
 
-        function resetData() {
-            if (confirm('Reset all data? This cannot be undone.')) {
-                localStorage.removeItem('telehealthData');
-                location.reload();
+        async function downloadAsImage(format = 'png') {
+            showToast('📸 Generating high-quality image...');
+            
+            const controls = document.querySelector('.controls');
+            const actionCells = document.querySelectorAll('.no-export');
+            const sheetsStatus = document.getElementById('sheetsStatus');
+            const originalDisplay = controls.style.display;
+            const originalStatusDisplay = sheetsStatus.style.display;
+            
+            controls.style.display = 'none';
+            sheetsStatus.style.display = 'none';
+            actionCells.forEach(cell => cell.style.display = 'none');
+            
+            try {
+                const reportContent = document.getElementById('reportContent');
+                
+                if (!window.html2canvas) {
+                    await loadHtml2Canvas();
+                }
+                
+                // Higher scale and quality settings
+                const canvas = await html2canvas(reportContent, {
+                    backgroundColor: '#ffffff',
+                    scale: 3, // Higher quality - 3x resolution
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    windowWidth: 1400,
+                    width: reportContent.scrollWidth,
+                    height: reportContent.scrollHeight,
+                    onclone: function(clonedDoc) {
+                        // Make sure all text is visible in clone
+                        const clonedTable = clonedDoc.querySelector('table');
+                        if (clonedTable) {
+                            clonedTable.style.tableLayout = 'fixed';
+                            const cells = clonedDoc.querySelectorAll('td, th');
+                            cells.forEach(cell => {
+                                cell.style.wordWrap = 'break-word';
+                                cell.style.whiteSpace = 'normal';
+                            });
+                        }
+                    }
+                });
+                
+                const imageType = format === 'jpg' ? 'image/jpeg' : 'image/png';
+                const quality = format === 'jpg' ? 0.98 : 1.0; // Higher quality for JPG
+                
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = `Telehealth_Report_${new Date().toISOString().split('T')[0]}.${format}`;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    
+                    showToast(`✅ High-quality ${format.toUpperCase()} downloaded!`);
+                }, imageType, quality);
+                
+            } catch (error) {
+                console.error('Error generating image:', error);
+                showToast('❌ Error generating image: ' + error.message);
+            } finally {
+                controls.style.display = originalDisplay;
+                sheetsStatus.style.display = originalStatusDisplay;
+                actionCells.forEach(cell => cell.style.display = '');
             }
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        function loadHtml2Canvas() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
         }
+
+        // =====================================================
+        // ADD/DELETE ROWS
+        // =====================================================
 
         function openAddRowModal() {
             document.getElementById('addRowModal').style.display = 'block';
@@ -808,6 +1014,10 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
+        function openGoogleDriveModal() {
+            document.getElementById('googleDriveModal').style.display = 'block';
+        }
+
         document.getElementById('addRowForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const newRow = {
@@ -815,28 +1025,37 @@
                 branch: document.getElementById('newBranch').value,
                 staffName: document.getElementById('newStaffName').value,
                 designation: document.getElementById('newDesignation').value,
-                reSubscriber: 0, newOnboarding: 0,
-                openingBalance: 0, todayReceived: 0, todayDeposit: 0
+                reSubscriber: 0, 
+                newOnboarding: 0,
+                openingBalance: 0, 
+                todayReceived: 0, 
+                todayDeposit: 0
             };
             tableData.push(newRow);
             renderTable();
             updateSummary();
             populateBranchFilter();
+            saveData();
             closeModal('addRowModal');
             this.reset();
             showToast('✅ Employee added!');
         });
 
         function deleteRow(index) {
-            if (confirm('Delete this row?')) {
+            if (confirm('Delete this employee record?')) {
                 tableData.splice(index, 1);
                 tableData.forEach((row, i) => row.srNo = i + 1);
                 renderTable(document.getElementById('branchFilter').value);
                 updateSummary();
                 populateBranchFilter();
-                showToast('🗑️ Row deleted!');
+                saveData();
+                showToast('🗑️ Employee deleted!');
             }
         }
+
+        // =====================================================
+        // FILTERING
+        // =====================================================
 
         function populateBranchFilter() {
             const branches = [...new Set(tableData.map(row => row.branch))];
@@ -854,6 +1073,17 @@
 
         function filterByBranch() {
             renderTable(document.getElementById('branchFilter').value);
+        }
+
+        // =====================================================
+        // UTILITY FUNCTIONS
+        // =====================================================
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
         window.onclick = function(event) {
