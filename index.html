@@ -1,938 +1,216 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sehat Kahani - Tele Health Progress Report</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<title>Crypto Faucet Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+<style>
+/* ============ GLOBAL STYLE ============ */
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+}
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
+h1, h2 {
+    text-align: center;
+}
 
-        .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
+/* Wallet Box */
+.wallet-box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 500px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
+.wallet-box button {
+    margin-top: 8px;
+}
 
-        .date-display {
-            font-size: 18px;
-            opacity: 0.9;
-            margin-top: 10px;
-        }
+/* Grid Layout */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 15px;
+}
 
-        .controls {
-            padding: 20px 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+/* Faucet Cards */
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
+.card h3 { margin-top: 0; }
 
-        .btn-primary {
-            background: #4CAF50;
-            color: white;
-        }
+/* Add Faucet Form */
+.add-box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 30px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
-        .btn-primary:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
-        }
+input {
+    padding: 7px;
+    margin: 5px;
+    width: 30%;
+}
 
-        .btn-secondary {
-            background: #2196F3;
-            color: white;
-        }
+button {
+    background: #0a66c2;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-        .btn-secondary:hover {
-            background: #0b7dda;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
-        }
+.delete-btn {
+    background: #d9534f;
+}
 
-        .btn-success {
-            background: #0F9D58;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #0d8a4d;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(15, 157, 88, 0.4);
-        }
-
-        .btn-danger {
-            background: #f44336;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #da190b;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
-        }
-
-        .btn-warning {
-            background: #ff9800;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #e68900;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
-        }
-
-        .btn-info {
-            background: #9C27B0;
-            color: white;
-        }
-
-        .btn-info:hover {
-            background: #7B1FA2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
-        }
-
-        /* Cloud save button special style */
-        .btn-cloud {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-        }
-        .btn-cloud:hover {
-            background: linear-gradient(135deg, #162d56, #1f4080);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(30, 60, 114, 0.4);
-        }
-
-        #reportContent {
-            padding: 30px;
-            background: white;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        th {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 15px 10px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 14px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 14px;
-        }
-
-        tr:hover {
-            background: #f5f5f5;
-        }
-
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        .editable {
-            background: #fff3cd;
-        }
-
-        .calculated {
-            background: #d4edda;
-            font-weight: 600;
-            color: #155724;
-        }
-
-        .summary {
-            padding: 20px 30px;
-            background: #e3f2fd;
-            border-top: 2px solid #2196F3;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .summary-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .summary-item h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .summary-item .value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2196F3;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: white;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .close {
-            font-size: 32px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #999;
-            transition: color 0.3s;
-        }
-
-        .close:hover {
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: #333;
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: none;
-            z-index: 2000;
-            animation: slideIn 0.3s ease;
-            max-width: 320px;
-            font-size: 15px;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 18px;
-            color: #666;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #2196F3;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media print {
-            .controls, .btn {
-                display: none !important;
-            }
-            
-            body {
-                background: white;
-                padding: 0;
-            }
-
-            .container {
-                box-shadow: none;
-            }
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        select {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-            cursor: pointer;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #2196F3;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-
-        /* Totals row */
-        .totals-row td {
-            background: #2c3e50;
-            color: white;
-            font-weight: 700;
-            font-size: 15px;
-        }
-        .totals-row input {
-            display: none;
-        }
-    </style>
+/* Mobile fix */
+@media (max-width:600px) {
+    input { width: 95%; }
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏥 Branch Wise Sehat Kahani Progress Report</h1>
-            <div class="date-display" id="reportDate">Mianwali Area - Dated: <span id="currentDate"></span></div>
-        </div>
 
-        <div class="controls">
-            <!-- SheetBest sync buttons -->
-            <button class="btn btn-success" onclick="loadFromSheetBest()">
-                📥 Load from Sheet
-            </button>
-            <button class="btn btn-cloud" onclick="saveToSheetBest()">☁️ Save to Sheet</button>
-            <button class="btn btn-secondary" onclick="saveData()">💾 Save Locally</button>
+<h1>Crypto Faucet Dashboard</h1>
+
+<!-- Wallet Box -->
+<div class="wallet-box">
+    <h2>Your Wallet</h2>
+    <p id="wallet-address">0x00c6ceb1b8ee00fc498cac13059d053d263712f5</p>
+    <button onclick="copyWallet()">Copy Wallet</button>
+</div>
+
+<h2>Your Faucets</h2>
+
+<!-- FAUCET GRID -->
+<div id="faucet-container" class="grid"></div>
+
+<!-- ADD NEW FAUCET -->
+<div class="add-box">
+    <h2>Add New Faucet</h2>
+    <input id="new-name" placeholder="Faucet Name">
+    <input id="new-url" placeholder="Faucet URL">
+    <input id="new-timer" placeholder="Timer (minutes)">
+    <button onclick="addFaucet()">Add</button>
+</div>
+
+<script>
+/* =============== STORED FAUCETS (Editable) =============== */
+
+let faucets = [
+    { name: "FaucetPay", url: "https://faucetpay.io/", timer: 30 },
+    { name: "CoinPayU", url: "https://coinpayu.com/", timer: 60 },
+    { name: "AutoFaucet", url: "https://autofaucet.org/", timer: 25 }
+];
+
+/* =============== LOAD FAUCETS TO PAGE =============== */
+
+function loadFaucets() {
+    const container = document.getElementById("faucet-container");
+    container.innerHTML = "";
+
+    faucets.forEach((f, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+            <h3>${f.name}</h3>
+            <p><a href="${f.url}" target="_blank">Visit Faucet</a></p>
+            <p>Claim Every: <strong>${f.timer} minutes</strong></p>
+            <p>Next Claim: <span id="timer-${index}">Loading...</span></p>
+            <button class="delete-btn" onclick="removeFaucet(${index})">Delete</button>
+        `;
+        container.appendChild(card);
+
+        startTimer(f.timer, `timer-${index}`);
+    });
+
+    saveLocal(); // auto-save in browser storage
+}
+
+/* =============== ADD NEW FAUCET =============== */
+
+function addFaucet() {
+    let name = document.getElementById("new-name").value;
+    let url = document.getElementById("new-url").value;
+    let timer = document.getElementById("new-timer").value;
+
+    if (!name || !url || !timer) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    faucets.push({
+        name,
+        url,
+        timer: parseInt(timer)
+    });
+
+    loadFaucets();
+}
+
+/* =============== REMOVE FAUCET =============== */
+
+function removeFaucet(i) {
+    if (!confirm("Delete this faucet?")) return;
+    faucets.splice(i, 1);
+    loadFaucets();
+}
+
+/* =============== TIMER FUNCTION =============== */
+
+function startTimer(minutes, elementId) {
+    let sec = minutes * 60;
+
+    setInterval(() => {
+        let m = Math.floor(sec / 60);
+        let s = sec % 60;
+        document.getElementById(elementId).innerText = `${m}m : ${s}s`;
+        if (sec > 0) sec--;
+    }, 1000);
+}
+
+/* =============== LOCAL STORAGE SAVE =============== */
 
-            <!-- Image Export Buttons -->
-            <button class="btn btn-info" onclick="downloadAsImage('png')">
-                🖼️ PNG
-            </button>
-            <button class="btn btn-info" onclick="downloadAsImage('jpg')">
-                📸 JPG
-            </button>
+function saveLocal() {
+    localStorage.setItem("faucets", JSON.stringify(faucets));
+}
 
-            <button class="btn btn-secondary" onclick="exportToExcel()">📊 Excel</button>
-            <button class="btn btn-warning" onclick="exportToCSV()">📄 CSV</button>
-            <button class="btn btn-danger" onclick="resetData()">🔄 Reset</button>
-            <button class="btn btn-primary" onclick="openAddRowModal()">➕ Add Row</button>
+function loadLocal() {
+    let stored = localStorage.getItem("faucets");
+    if (stored) faucets = JSON.parse(stored);
+}
 
-            <div class="filter-section">
-                <label for="branchFilter">Branch:</label>
-                <select id="branchFilter" onchange="filterByBranch()">
-                    <option value="all">All Branches</option>
-                </select>
-            </div>
-        </div>
+/* =============== COPY WALLET =============== */
 
-        <div id="reportContent">
-            <div id="loadingIndicator" class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>Loading data from Sheet…</p>
-            </div>
+function copyWallet() {
+    navigator.clipboard.writeText(
+        "0x00c6ceb1b8ee00fc498cac13059d053d263712f5"
+    );
+    alert("Wallet Copied!");
+}
 
-            <div class="table-container">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Sr.No</th>
-                            <th>Branch</th>
-                            <th>Staff Name</th>
-                            <th>Designation</th>
-                            <th>Re-subscriber</th>
-                            <th>New Onboarding</th>
-                            <th>Grand Total</th>
-                            <th>Opening Balance</th>
-                            <th>Today Received</th>
-                            <th>Today Deposit</th>
-                            <th>Closing Balance</th>
-                            <th class="no-export">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                    </tbody>
-                </table>
-            </div>
+loadLocal();
+loadFaucets();
+</script>
 
-            <div class="summary" id="summary"></div>
-        </div>
-    </div>
-
-    <!-- Add Row Modal -->
-    <div id="addRowModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>➕ Add New Employee</h2>
-                <span class="close" onclick="closeModal('addRowModal')">&times;</span>
-            </div>
-            <form id="addRowForm">
-                <div class="form-group">
-                    <label>Branch:</label>
-                    <input type="text" id="newBranch" required>
-                </div>
-                <div class="form-group">
-                    <label>Staff Name:</label>
-                    <input type="text" id="newStaffName" required>
-                </div>
-                <div class="form-group">
-                    <label>Designation:</label>
-                    <input type="text" id="newDesignation" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Employee</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="toast" class="toast"></div>
-
-    <script>
-        // =====================================================
-        // SHEETBEST CONFIGURATION
-        // =====================================================
-        const CONFIG = {
-            SHEETBEST_URL:   'https://api.sheetbest.com/sheets/8c42dff2-d012-4a55-9b1a-41770fab3ea7',
-            SHEETBEST_TOKEN: 'R4JrR0lvUVVeuPWCpY7f9XNKbOInA4h1%_qOdHjpzAimDUi5QI8iZ3mz35S9B08g'
-        };
-
-        // =====================================================
-        // COLUMN MAP  (tableData key  ↔  Google Sheet header)
-        // Adjust the RIGHT side if your sheet headers are different
-        // =====================================================
-        const COL = {
-            srNo:           'Sr.No',
-            branch:         'Branch',
-            staffName:      'Staff Name',
-            designation:    'Designation',
-            reSubscriber:   'Re-subscriber',
-            newOnboarding:  'New Onboarding',
-            openingBalance: 'Opening Balance',
-            todayReceived:  'Today Received',
-            todayDeposit:   'Today Deposit'
-        };
-
-        // =====================================================
-        // DEFAULT / FALLBACK DATA
-        // =====================================================
-        const DEFAULT_DATA = [
-            {srNo:1,  branch:"Mianwali-1",       staffName:"Muhammad Sijad",           designation:"Assistant Branch Manager", reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:2,  branch:"Mianwali-1",       staffName:"Zafar Iqbal",              designation:"Unit Manager",             reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:3,  branch:"Mianwali-1",       staffName:"Karam Elahi",              designation:"Unit Manager",             reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:4,  branch:"Mianwali-1",       staffName:"Shahid Abbas",             designation:"Unit Manager",             reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:5,  branch:"Mianwali-1",       staffName:"Nadeem Abbas",             designation:"Unit Manager",             reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:6,  branch:"Mianwali-1",       staffName:"Muhammad Usama Hassan Khan",designation:"Unit Manager",             reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:7,  branch:"Mianwali-2",       staffName:"Zain Ul Islam",            designation:"Assistant Branch Manager", reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:8,  branch:"Mianwali-2",       staffName:"Muhammad Arif Khan",       designation:"Unit Manager",             reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:9,  branch:"Mianwali-2",       staffName:"Muhammad Touqeer Iqbal",   designation:"Unit Manager",             reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:10, branch:"Mosa Khail (MSK)", staffName:"Tanveer Hayat",            designation:"Branch Manager",           reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:11, branch:"Mosa Khail (MSK)", staffName:"Muhammad Umair",           designation:"Assistant Branch Manager", reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0},
-            {srNo:12, branch:"Mosa Khail (MSK)", staffName:"Jawad Usman Khan",         designation:"Unit Manager",             reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0}
-        ];
-
-        let tableData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-
-        // =====================================================
-        // INIT
-        // =====================================================
-        function init() {
-            updateCurrentDate();
-            loadData();                 // load from localStorage first
-            loadFromSheetBest();        // then fetch latest from sheet (overrides if available)
-        }
-
-        function updateCurrentDate() {
-            document.getElementById('currentDate').textContent =
-                new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' });
-        }
-
-        /* ---------- localStorage helpers ---------- */
-        function loadData() {
-            const saved = localStorage.getItem('telehealthData');
-            if (saved) {
-                try { tableData = JSON.parse(saved); } catch(e) { /* keep defaults */ }
-            }
-            renderTable();
-            updateSummary();
-            populateBranchFilter();
-        }
-
-        function saveData() {
-            localStorage.setItem('telehealthData', JSON.stringify(tableData));
-            showToast('💾 Data saved locally!');
-        }
-
-        // =====================================================
-        // SHEETBEST  –  LOAD  (GET)
-        // =====================================================
-        async function loadFromSheetBest() {
-            const loader = document.getElementById('loadingIndicator');
-            loader.style.display = 'block';
-            showToast('📥 Loading from Sheet…');
-
-            try {
-                const res = await fetch(CONFIG.SHEETBEST_URL, {
-                    method: 'GET',
-                    headers: { 'X-Api-Key': CONFIG.SHEETBEST_TOKEN }
-                });
-
-                if (!res.ok) throw new Error('HTTP ' + res.status + ' – ' + res.statusText);
-
-                const rows = await res.json();   // array of objects keyed by sheet column header
-
-                if (!Array.isArray(rows) || rows.length === 0) {
-                    showToast('⚠️ Sheet is empty – using local data.');
-                    return;
-                }
-
-                // Convert sheet rows  →  tableData
-                tableData = rows.map((row, i) => ({
-                    srNo:           i + 1,
-                    branch:         String(row[COL.branch]          || ''),
-                    staffName:      String(row[COL.staffName]       || ''),
-                    designation:    String(row[COL.designation]     || ''),
-                    reSubscriber:   Number(row[COL.reSubscriber])   || 0,
-                    newOnboarding:  Number(row[COL.newOnboarding])  || 0,
-                    openingBalance: Number(row[COL.openingBalance]) || 0,
-                    todayReceived:  Number(row[COL.todayReceived])  || 0,
-                    todayDeposit:   Number(row[COL.todayDeposit])   || 0
-                }));
-
-                renderTable();
-                updateSummary();
-                populateBranchFilter();
-                localStorage.setItem('telehealthData', JSON.stringify(tableData));  // mirror locally
-                showToast('✅ Data loaded from Sheet!');
-
-            } catch (err) {
-                console.error('SheetBest LOAD error:', err);
-                showToast('❌ Load failed – ' + err.message);
-            } finally {
-                loader.style.display = 'none';
-            }
-        }
-
-        // =====================================================
-        // SHEETBEST  –  SAVE  (PUT  – replaces all rows)
-        // =====================================================
-        async function saveToSheetBest() {
-            showToast('☁️ Saving to Sheet…');
-
-            // Build payload with sheet-header keys
-            const payload = tableData.map(row => ({
-                [COL.srNo]:           row.srNo,
-                [COL.branch]:         row.branch,
-                [COL.staffName]:      row.staffName,
-                [COL.designation]:    row.designation,
-                [COL.reSubscriber]:   row.reSubscriber,
-                [COL.newOnboarding]:  row.newOnboarding,
-                [COL.openingBalance]: row.openingBalance,
-                [COL.todayReceived]:  row.todayReceived,
-                [COL.todayDeposit]:   row.todayDeposit
-            }));
-
-            try {
-                const res = await fetch(CONFIG.SHEETBEST_URL, {
-                    method: 'PUT',
-                    headers: {
-                        'X-Api-Key':    CONFIG.SHEETBEST_TOKEN,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) throw new Error('HTTP ' + res.status + ' – ' + res.statusText);
-
-                localStorage.setItem('telehealthData', JSON.stringify(tableData));
-                showToast('✅ Saved to Sheet successfully!');
-
-            } catch (err) {
-                console.error('SheetBest SAVE error:', err);
-                showToast('❌ Save failed – ' + err.message);
-            }
-        }
-
-        // =====================================================
-        // TABLE RENDER
-        // =====================================================
-        function renderTable(filterBranch = 'all') {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-
-            const filtered = filterBranch === 'all'
-                ? tableData
-                : tableData.filter(r => r.branch === filterBranch);
-
-            // Running totals for the footer row
-            let totals = { reSubscriber:0, newOnboarding:0, grandTotal:0, openingBalance:0, todayReceived:0, todayDeposit:0, closingBalance:0 };
-
-            filtered.forEach((row) => {
-                const idx = tableData.indexOf(row);
-                const grandTotal      = row.reSubscriber + row.newOnboarding;
-                const closingBalance  = row.openingBalance + row.todayReceived - row.todayDeposit;
-
-                totals.reSubscriber   += row.reSubscriber;
-                totals.newOnboarding  += row.newOnboarding;
-                totals.grandTotal     += grandTotal;
-                totals.openingBalance += row.openingBalance;
-                totals.todayReceived  += row.todayReceived;
-                totals.todayDeposit   += row.todayDeposit;
-                totals.closingBalance += closingBalance;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${row.srNo}</td>
-                    <td><input type="text"   value="${row.branch}"         onchange="updateCell(${idx},'branch',this.value)"         class="editable"></td>
-                    <td><input type="text"   value="${row.staffName}"      onchange="updateCell(${idx},'staffName',this.value)"      class="editable"></td>
-                    <td><input type="text"   value="${row.designation}"    onchange="updateCell(${idx},'designation',this.value)"    class="editable"></td>
-                    <td><input type="number" value="${row.reSubscriber}"   onchange="updateCell(${idx},'reSubscriber',Number(this.value)||0)"   class="editable"></td>
-                    <td><input type="number" value="${row.newOnboarding}"  onchange="updateCell(${idx},'newOnboarding',Number(this.value)||0)"  class="editable"></td>
-                    <td class="calculated">${grandTotal}</td>
-                    <td><input type="number" value="${row.openingBalance}" onchange="updateCell(${idx},'openingBalance',Number(this.value)||0)" class="editable"></td>
-                    <td><input type="number" value="${row.todayReceived}"  onchange="updateCell(${idx},'todayReceived',Number(this.value)||0)"  class="editable"></td>
-                    <td><input type="number" value="${row.todayDeposit}"   onchange="updateCell(${idx},'todayDeposit',Number(this.value)||0)"   class="editable"></td>
-                    <td class="calculated">${closingBalance}</td>
-                    <td class="no-export"><button class="btn btn-danger" style="padding:6px 12px;font-size:12px;" onclick="deleteRow(${idx})">🗑️</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // ── Totals row ──
-            const totTr = document.createElement('tr');
-            totTr.className = 'totals-row';
-            totTr.innerHTML = `
-                <td colspan="4" style="text-align:center;">📊 TOTALS</td>
-                <td>${totals.reSubscriber}</td>
-                <td>${totals.newOnboarding}</td>
-                <td>${totals.grandTotal}</td>
-                <td>${totals.openingBalance.toLocaleString()}</td>
-                <td>${totals.todayReceived.toLocaleString()}</td>
-                <td>${totals.todayDeposit.toLocaleString()}</td>
-                <td>${totals.closingBalance.toLocaleString()}</td>
-                <td class="no-export"></td>
-            `;
-            tbody.appendChild(totTr);
-        }
-
-        function updateCell(rowIndex, field, value) {
-            tableData[rowIndex][field] = value;
-            renderTable(document.getElementById('branchFilter').value);
-            updateSummary();
-        }
-
-        // =====================================================
-        // SUMMARY CARDS
-        // =====================================================
-        function updateSummary() {
-            let totRe=0, totNew=0, totGT=0, totCash=0;
-            tableData.forEach(r => {
-                totRe   += r.reSubscriber;
-                totNew  += r.newOnboarding;
-                totGT   += r.reSubscriber + r.newOnboarding;
-                totCash += r.openingBalance + r.todayReceived - r.todayDeposit;
-            });
-
-            document.getElementById('summary').innerHTML = `
-                <div class="summary-item">
-                    <h3>Total Re-Subscribers</h3>
-                    <div class="value">${totRe}</div>
-                </div>
-                <div class="summary-item">
-                    <h3>Total New Onboarding</h3>
-                    <div class="value">${totNew}</div>
-                </div>
-                <div class="summary-item">
-                    <h3>Grand Total Members</h3>
-                    <div class="value">${totGT}</div>
-                </div>
-                <div class="summary-item">
-                    <h3>Total Cash in Hand</h3>
-                    <div class="value">Rs. ${totCash.toLocaleString()}</div>
-                </div>
-            `;
-        }
-
-        // =====================================================
-        // IMAGE EXPORT
-        // =====================================================
-        async function downloadAsImage(format = 'png') {
-            showToast('📸 Generating image…');
-            const controls      = document.querySelector('.controls');
-            const actionCells   = document.querySelectorAll('.no-export');
-            const origDisplay   = controls.style.display;
-
-            controls.style.display = 'none';
-            actionCells.forEach(c => c.style.display = 'none');
-
-            try {
-                if (!window.html2canvas) await loadHtml2Canvas();
-
-                const el = document.getElementById('reportContent');
-                const canvas = await html2canvas(el, {
-                    backgroundColor: '#ffffff',
-                    scale: 2,
-                    logging: false,
-                    windowWidth:  el.scrollWidth,
-                    windowHeight: el.scrollHeight
-                });
-
-                const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
-                const quality  = format === 'jpg' ? 0.95 : 1.0;
-
-                canvas.toBlob((blob) => {
-                    const url  = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = `Telehealth_Report_${new Date().toISOString().split('T')[0]}.${format}`;
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
-                    showToast(`✅ Downloaded as ${format.toUpperCase()}!`);
-                }, mimeType, quality);
-
-            } catch (err) {
-                console.error(err);
-                showToast('❌ Image error – ' + err.message);
-            } finally {
-                controls.style.display = origDisplay;
-                actionCells.forEach(c => c.style.display = '');
-            }
-        }
-
-        function loadHtml2Canvas() {
-            return new Promise((resolve, reject) => {
-                const s = document.createElement('script');
-                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                s.onload = resolve;
-                s.onerror = reject;
-                document.head.appendChild(s);
-            });
-        }
-
-        // =====================================================
-        // EXCEL / CSV EXPORT
-        // =====================================================
-        function exportToExcel() {
-            const wb   = XLSX.utils.book_new();
-            const head = [['Branch Wise Sehat Kahani Progress Report – Mianwali Area'],
-                          ['Date: ' + new Date().toLocaleDateString('en-GB')], [],
-                          ['Sr.No','Branch','Staff Name','Designation','Re-subscriber','New Onboarding','Grand Total','Opening Balance','Today Received','Today Deposit','Closing Balance']];
-
-            tableData.forEach(r => {
-                head.push([r.srNo, r.branch, r.staffName, r.designation,
-                           r.reSubscriber, r.newOnboarding, r.reSubscriber+r.newOnboarding,
-                           r.openingBalance, r.todayReceived, r.todayDeposit,
-                           r.openingBalance+r.todayReceived-r.todayDeposit]);
-            });
-
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(head), 'Report');
-            XLSX.writeFile(wb, `Telehealth_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast('📊 Excel exported!');
-        }
-
-        function exportToCSV() {
-            let csv = 'Sr.No,Branch,Staff Name,Designation,Re-subscriber,New Onboarding,Grand Total,Opening Balance,Today Received,Today Deposit,Closing Balance\n';
-            tableData.forEach(r => {
-                csv += `${r.srNo},"${r.branch}","${r.staffName}","${r.designation}",${r.reSubscriber},${r.newOnboarding},${r.reSubscriber+r.newOnboarding},${r.openingBalance},${r.todayReceived},${r.todayDeposit},${r.openingBalance+r.todayReceived-r.todayDeposit}\n`;
-            });
-            const blob = new Blob([csv], { type:'text/csv' });
-            const a    = document.createElement('a');
-            a.href     = URL.createObjectURL(blob);
-            a.download = `Telehealth_Report_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            showToast('📄 CSV exported!');
-        }
-
-        // =====================================================
-        // MISC HELPERS
-        // =====================================================
-        function resetData() {
-            if (confirm('Reset all data? This cannot be undone.')) {
-                localStorage.removeItem('telehealthData');
-                tableData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                renderTable();
-                updateSummary();
-                populateBranchFilter();
-                showToast('🔄 Data reset!');
-            }
-        }
-
-        function showToast(message) {
-            const t = document.getElementById('toast');
-            t.textContent = message;
-            t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 3000);
-        }
-
-        function openAddRowModal() {
-            document.getElementById('addRowModal').style.display = 'block';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        document.getElementById('addRowForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            tableData.push({
-                srNo: tableData.length + 1,
-                branch:         document.getElementById('newBranch').value,
-                staffName:      document.getElementById('newStaffName').value,
-                designation:    document.getElementById('newDesignation').value,
-                reSubscriber:0, newOnboarding:0, openingBalance:0, todayReceived:0, todayDeposit:0
-            });
-            renderTable();
-            updateSummary();
-            populateBranchFilter();
-            closeModal('addRowModal');
-            this.reset();
-            showToast('✅ Employee added!');
-        });
-
-        function deleteRow(index) {
-            if (confirm('Delete this row?')) {
-                tableData.splice(index, 1);
-                tableData.forEach((r, i) => r.srNo = i + 1);
-                renderTable(document.getElementById('branchFilter').value);
-                updateSummary();
-                populateBranchFilter();
-                showToast('🗑️ Row deleted!');
-            }
-        }
-
-        function populateBranchFilter() {
-            const branches = [...new Set(tableData.map(r => r.branch))];
-            const sel      = document.getElementById('branchFilter');
-            const cur      = sel.value;
-            sel.innerHTML  = '<option value="all">All Branches</option>';
-            branches.forEach(b => {
-                const o = document.createElement('option');
-                o.value = o.textContent = b;
-                sel.appendChild(o);
-            });
-            sel.value = cur;
-        }
-
-        function filterByBranch() {
-            renderTable(document.getElementById('branchFilter').value);
-        }
-
-        window.onclick = function(e) {
-            if (e.target.classList.contains('modal')) e.target.style.display = 'none';
-        };
-
-        // ── Boot ──
-        init();
-    </script>
-
-    <!-- Required Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
