@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apni_Chhat_Mehfooz_Chhat</title>
+<title>Apni Chhat Mehfooz Chhat Member Search - Admin Edition</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,31 +18,36 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 
 :root{
-  --navy:#0d6ba0;
-  --navy-dark:#0a4d78;
-  --navy-light:#3aa8dd;
-  --gold:#7dd3f0;
-  --gold-dark:#4fb8e0;
-  --gold-light:#bfeeff;
-  --success:#10b981;
-  --error:#ef4444;
-  --warning:#f59e0b;
+  --navy:#0a84ff;
+  --navy-dark:#0060df;
+  --navy-light:#5ac8fa;
+  --gold:#bf5af2;
+  --gold-dark:#a742e0;
+  --gold-light:#da9cf7;
+  --success:#30d158;
+  --error:#ff453a;
+  --warning:#ff9f0a;
   --bg-light:#f4fbff;
-  --text-dark:#0b3a55;
+  --text-dark:#101828;
   --text-light:#5c8aa3;
   --border:#d3ecf7;
-  --admin:#7c3aed;
-  --admin-light:#8b5cf6;
-  --danger:#dc2626;
-  --crystal-glass:rgba(255,255,255,0.55);
-  --crystal-glass-strong:rgba(255,255,255,0.75);
-  --crystal-border:rgba(255,255,255,0.6);
-  --crystal-shine:rgba(255,255,255,0.9);
+  --admin:#bf5af2;
+  --admin-light:#da9cf7;
+  --danger:#ff453a;
+  --crystal-glass:rgba(255,255,255,0.45);
+  --crystal-glass-strong:rgba(255,255,255,0.68);
+  --crystal-border:rgba(255,255,255,0.55);
+  --crystal-shine:rgba(255,255,255,0.95);
 }
 
 body{
   font-family:'Inter',sans-serif;
-  background:linear-gradient(135deg,#eaf7ff 0%,#cdeeff 25%,#a7dcf5 55%,#7fc4e8 80%,#5fb0dd 100%);
+  background:
+    radial-gradient(circle at 15% 15%,#3b82f6 0%,transparent 40%),
+    radial-gradient(circle at 85% 20%,#a855f7 0%,transparent 42%),
+    radial-gradient(circle at 20% 85%,#ec4899 0%,transparent 42%),
+    radial-gradient(circle at 85% 85%,#06b6d4 0%,transparent 45%),
+    linear-gradient(135deg,#0b1030 0%,#150a35 45%,#1a0b2e 100%);
   background-attachment:fixed;
   color:var(--text-dark);
   min-height:100vh;
@@ -59,10 +64,9 @@ body::before{
   position:fixed;
   top:0;left:0;right:0;bottom:0;
   background:
-    radial-gradient(circle at 20% 20%,rgba(255,255,255,0.55) 0%,transparent 45%),
-    radial-gradient(circle at 80% 10%,rgba(255,255,255,0.35) 0%,transparent 40%),
-    radial-gradient(circle at 80% 80%,rgba(190,235,255,0.5) 0%,transparent 50%),
-    radial-gradient(circle at 10% 80%,rgba(255,255,255,0.3) 0%,transparent 45%);
+    radial-gradient(circle at 30% 30%,rgba(255,255,255,0.12) 0%,transparent 35%),
+    radial-gradient(circle at 75% 65%,rgba(255,255,255,0.08) 0%,transparent 40%),
+    radial-gradient(circle at 50% 90%,rgba(255,255,255,0.06) 0%,transparent 45%);
   pointer-events:none;
   z-index:0;
   animation:bgMove 20s ease-in-out infinite;
@@ -189,8 +193,8 @@ body::before{
   color:white;font-weight:800;font-size:1.2rem;
 }
 .user-avatar.admin-avatar{background:linear-gradient(135deg,var(--admin),var(--admin-light));}
-.user-details h3{color:var(--navy-dark);font-size:1rem;font-weight:700;}
-.user-details p{color:var(--navy);font-size:0.85rem;}
+.user-details h3{color:#ffffff;font-size:1rem;font-weight:700;}
+.user-details p{color:rgba(255,255,255,0.7);font-size:0.85rem;}
 
 .header-actions{display:flex;gap:10px;align-items:center;}
 
@@ -229,8 +233,8 @@ body::before{
 }
 @keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.8;transform:scale(1.1);}}
 
-h1{color:var(--navy-dark);font-size:2.8rem;font-weight:800;margin-bottom:10px;text-shadow:0 2px 12px rgba(255,255,255,0.6);}
-.subtitle{color:var(--navy);font-size:1.2rem;font-weight:500;}
+h1{color:#ffffff;font-size:2.8rem;font-weight:800;margin-bottom:10px;text-shadow:0 4px 24px rgba(10,132,255,0.5);}
+.subtitle{color:rgba(255,255,255,0.75);font-size:1.2rem;font-weight:500;}
 
 /* Card */
 .card{
@@ -632,68 +636,81 @@ td:nth-child(2){font-family:monospace;color:var(--navy-light);}
 }
 
 /* =========================================================
-   CRYSTAL THEME — glassmorphism overrides
+   LIQUID GLASS THEME — Apple-style refractive glass
    ========================================================= */
 .login-box,
 .card{
   background:var(--crystal-glass-strong) !important;
-  backdrop-filter:blur(22px) saturate(160%);
-  -webkit-backdrop-filter:blur(22px) saturate(160%);
+  backdrop-filter:blur(40px) saturate(200%);
+  -webkit-backdrop-filter:blur(40px) saturate(200%);
   border:1px solid var(--crystal-border) !important;
+  border-radius:28px !important;
   box-shadow:
-    0 8px 32px rgba(31,90,130,0.18),
-    inset 0 1px 0 rgba(255,255,255,0.8),
-    inset 0 0 40px rgba(255,255,255,0.15) !important;
+    0 20px 60px rgba(0,0,0,0.35),
+    0 2px 8px rgba(0,0,0,0.15),
+    inset 0 1px 1px rgba(255,255,255,0.9),
+    inset 0 -1px 12px rgba(255,255,255,0.15) !important;
   position:relative;
   overflow:hidden;
+}
+.login-box::before,
+.card::before{
+  content:'';
+  position:absolute;
+  top:0;left:8%;right:8%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent);
+  z-index:2;
 }
 .login-box::after,
 .card::after{
   content:'';
   position:absolute;
-  top:-60%;left:-20%;
-  width:60%;height:220%;
-  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.55) 48%,rgba(255,255,255,0.15) 55%,transparent 70%);
+  top:-70%;left:-25%;
+  width:55%;height:240%;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.5) 48%,rgba(255,255,255,0.1) 56%,transparent 72%);
   transform:rotate(20deg);
   pointer-events:none;
-  animation:crystalSheen 8s ease-in-out infinite;
+  animation:crystalSheen 9s ease-in-out infinite;
 }
 @keyframes crystalSheen{
   0%,100%{transform:translateX(-10%) rotate(20deg);}
-  50%{transform:translateX(140%) rotate(20deg);}
+  50%{transform:translateX(150%) rotate(20deg);}
 }
 
 .login-header{
-  background:linear-gradient(135deg,rgba(58,168,221,0.9) 0%,rgba(13,107,160,0.95) 100%) !important;
+  background:linear-gradient(135deg,rgba(10,132,255,0.9) 0%,rgba(191,90,242,0.85) 100%) !important;
 }
 
 .form-input{
-  background:rgba(255,255,255,0.55) !important;
-  border:2px solid rgba(255,255,255,0.7) !important;
-  backdrop-filter:blur(6px);
+  background:rgba(255,255,255,0.5) !important;
+  border:1.5px solid rgba(255,255,255,0.7) !important;
+  border-radius:14px !important;
+  backdrop-filter:blur(10px);
 }
 .form-input:focus{
   background:rgba(255,255,255,0.85) !important;
-  box-shadow:0 0 0 4px rgba(125,211,240,0.35) !important;
+  box-shadow:0 0 0 4px rgba(10,132,255,0.3) !important;
 }
 
-/* ---- Crystal buttons ---- */
+/* ---- Liquid Glass pill buttons ---- */
 .btn-login,
 button.search-btn,
 .btn-admin-panel,
 .btn-add-user,
 .btn-confirm{
-  background:linear-gradient(135deg,rgba(125,211,240,0.9),rgba(13,107,160,0.9)) !important;
-  border:1px solid rgba(255,255,255,0.6) !important;
+  background:linear-gradient(135deg,rgba(10,132,255,0.85),rgba(191,90,242,0.85)) !important;
+  border:1px solid rgba(255,255,255,0.55) !important;
+  border-radius:100px !important;
   color:#fff !important;
   position:relative;
   overflow:hidden;
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(14px);
   box-shadow:
-    0 6px 20px rgba(13,107,160,0.35),
-    inset 0 1px 0 rgba(255,255,255,0.7),
-    inset 0 -2px 6px rgba(255,255,255,0.15) !important;
-  text-shadow:0 1px 2px rgba(0,0,0,0.15);
+    0 8px 24px rgba(10,132,255,0.4),
+    inset 0 1px 1px rgba(255,255,255,0.8),
+    inset 0 -2px 8px rgba(255,255,255,0.15) !important;
+  text-shadow:0 1px 3px rgba(0,0,0,0.2);
   transition:all 0.3s;
 }
 .btn-login:hover:not(:disabled),
@@ -703,9 +720,9 @@ button.search-btn:hover:not(:disabled),
 .btn-confirm:hover{
   transform:translateY(-3px) !important;
   box-shadow:
-    0 10px 28px rgba(13,107,160,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.85) !important;
-  filter:brightness(1.06);
+    0 14px 34px rgba(10,132,255,0.5),
+    inset 0 1px 1px rgba(255,255,255,0.9) !important;
+  filter:brightness(1.08);
 }
 .btn-login::before,
 button.search-btn::before{
@@ -713,7 +730,7 @@ button.search-btn::before{
   position:absolute;
   top:0;left:-75%;
   width:50%;height:100%;
-  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.65),transparent);
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.7),transparent);
   transform:skewX(-20deg);
   animation:crystalBtnShine 3.2s ease-in-out infinite;
 }
@@ -727,13 +744,14 @@ button.search-btn::before{
 .btn-cancel,
 .btn-unblock-dns,
 .btn-sm{
-  background:rgba(255,255,255,0.5) !important;
-  border:1px solid rgba(255,255,255,0.75) !important;
+  background:rgba(255,255,255,0.45) !important;
+  border:1px solid rgba(255,255,255,0.7) !important;
+  border-radius:100px !important;
   color:var(--navy-dark) !important;
-  backdrop-filter:blur(8px);
+  backdrop-filter:blur(12px);
   box-shadow:
-    0 4px 14px rgba(13,107,160,0.15),
-    inset 0 1px 0 rgba(255,255,255,0.9) !important;
+    0 4px 14px rgba(0,0,0,0.15),
+    inset 0 1px 1px rgba(255,255,255,0.9) !important;
   transition:all 0.3s;
 }
 .action-btn:hover,
@@ -741,19 +759,21 @@ button.search-btn::before{
 .btn-cancel:hover,
 .btn-unblock-dns:hover,
 .btn-sm:hover{
-  background:rgba(255,255,255,0.8) !important;
+  background:rgba(255,255,255,0.75) !important;
   transform:translateY(-2px) !important;
-  box-shadow:0 8px 22px rgba(13,107,160,0.25) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,0.2) !important;
 }
 
 .user-info{
-  background:rgba(255,255,255,0.25) !important;
-  backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,0.4) !important;
+  background:rgba(255,255,255,0.14) !important;
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.35) !important;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.4),0 8px 24px rgba(0,0,0,0.2) !important;
 }
 
 ::-webkit-scrollbar{width:10px;height:10px;}
-::-webkit-scrollbar-track{background:var(--bg-light);}
+::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:linear-gradient(135deg,var(--navy),var(--gold));border-radius:5px;}
 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg,var(--gold),var(--navy));}
 </style>
@@ -765,7 +785,7 @@ button.search-btn::before{
   <div class="login-box">
     <div class="login-header">
       <div class="login-logo">🔐</div>
-      <h2 class="login-title">ACAG Login</h2>
+      <h2 class="login-title">Apni Chhat Mehfooz Chhat Login</h2>
       <p class="login-subtitle">Secure Member Search System</p>
     </div>
     <div class="login-body">
@@ -956,7 +976,7 @@ button.search-btn::before{
 
   <div class="header">
     <div class="logo">🔍</div>
-    <h1>ACAG Member Search</h1>
+    <h1>Apni Chhat Mehfooz Chhat Member Search</h1>
     <p class="subtitle">Advanced Database Search System</p>
   </div>
 
@@ -1649,7 +1669,7 @@ function exportUserReport(){
   ]);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Users');
-  XLSX.writeFile(wb,`ACAG_User_Report_${Date.now()}.xlsx`);
+  XLSX.writeFile(wb,`Apni_Chhat_Mehfooz_Chhat_User_Report_${Date.now()}.xlsx`);
   logActivity('📤',`Admin <strong>${currentUser}</strong> exported user report`);
 }
 
@@ -1862,23 +1882,23 @@ function exportExcel(){
   if(currentResults.length===0){alert('No results to export');return;}
   const ws=XLSX.utils.aoa_to_sheet([['Sr No','CNIC','Applicant Name','Contact No','Branch Name','Branch Code','Batch No'],...currentResults]);
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'ACAG Results');
-  XLSX.writeFile(wb,`ACAG_Search_Results_${Date.now()}.xlsx`);
+  XLSX.utils.book_append_sheet(wb,ws,'Apni Chhat Mehfooz Chhat Results');
+  XLSX.writeFile(wb,`Apni_Chhat_Mehfooz_Chhat_Search_Results_${Date.now()}.xlsx`);
 }
 function exportPDF(){
   if(currentResults.length===0){alert('No results to export');return;}
   const{jsPDF}=window.jspdf;const doc=new jsPDF();
-  doc.setFontSize(18);doc.text('ACAG Member Search Results',14,20);
+  doc.setFontSize(18);doc.text('Apni Chhat Mehfooz Chhat Member Search Results',14,20);
   doc.setFontSize(10);doc.text(`Generated: ${new Date().toLocaleString()}`,14,28);
   doc.autoTable({head:[['Sr No','CNIC','Name','Contact','Branch','Code','Batch']],body:currentResults.map(r=>[r[0],r[1],r[2],r[3],r[4],r[5],r[6]]),startY:35,styles:{fontSize:9}});
-  doc.save(`ACAG_Results_${Date.now()}.pdf`);
+  doc.save(`Apni_Chhat_Mehfooz_Chhat_Results_${Date.now()}.pdf`);
 }
 function printResults(){
   if(currentResults.length===0){alert('No results to print');return;}
   const w=window.open('','','height=600,width=800');
-  w.document.write('<html><head><title>ACAG Search Results</title>');
+  w.document.write('<html><head><title>Apni Chhat Mehfooz Chhat Search Results</title>');
   w.document.write('<style>body{font-family:Arial;padding:20px;}h2{margin-bottom:10px;color:#003d82;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ddd;padding:12px;}th{background:#003d82;color:#c59d5f;}</style>');
-  w.document.write('</head><body><h2>ACAG Member Search Results</h2>');
+  w.document.write('</head><body><h2>Apni Chhat Mehfooz Chhat Member Search Results</h2>');
   w.document.write(`<p>Generated: ${new Date().toLocaleString()}</p>`);
   w.document.write('<table><thead><tr><th>Sr No</th><th>CNIC</th><th>Name</th><th>Contact</th><th>Branch Name</th><th>Branch Code</th><th>Batch</th></tr></thead><tbody>');
   currentResults.forEach(r=>{w.document.write(`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td></tr>`);});
@@ -1887,7 +1907,7 @@ function printResults(){
 }
 function shareResults(){
   if(currentResults.length===0){alert('No results to share');return;}
-  if(navigator.share){navigator.share({title:'ACAG Search Results',text:`Found ${currentResults.length} record(s) in ACAG database`}).catch(()=>{});}
+  if(navigator.share){navigator.share({title:'Apni Chhat Mehfooz Chhat Search Results',text:`Found ${currentResults.length} record(s) in Apni Chhat Mehfooz Chhat database`}).catch(()=>{});}
   else{alert('Share feature not supported in this browser');}
 }
 
