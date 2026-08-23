@@ -405,7 +405,27 @@ td:nth-child(2){font-family:monospace;color:var(--navy-light);}
 .result-modal-header h3{color:white;font-size:1.3rem;font-weight:800;}
 .result-modal-header p{color:var(--gold-light);font-size:0.85rem;margin-top:4px;}
 .result-modal-body{padding:0;overflow-y:auto;flex:1;}
-.result-modal-body .table-wrapper{border:none;border-radius:0;}
+.result-modal-body .table-wrapper{border:none;border-radius:0;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.result-modal-body table{width:auto;min-width:100%;}
+.result-modal-body th,.result-modal-body td{white-space:nowrap;}
+.result-modal-body td:first-child,.result-modal-body th:first-child{
+  position:sticky;left:0;z-index:2;
+  font-family:inherit;color:var(--text-dark);
+  background:var(--bg-light);
+  box-shadow:2px 0 5px rgba(0,0,0,0.06);
+}
+.result-modal-body thead th:first-child,.result-modal-body tr:first-child th:first-child{
+  background:var(--navy-dark);color:var(--gold-light);
+}
+.result-modal-body td:nth-child(2){font-family:inherit;color:var(--text-dark);}
+@media (max-width:600px){
+  .result-modal-box{max-width:100%;max-height:94vh;border-radius:14px;}
+  .result-modal-header{padding:16px 18px;}
+  .result-modal-header h3{font-size:1.1rem;}
+  .result-modal-body th,.result-modal-body td{padding:12px 14px;font-size:0.85rem;}
+  .result-modal-footer{padding:12px 15px;flex-wrap:wrap;}
+  .result-modal-footer .action-btn{flex:1;min-width:80px;text-align:center;padding:10px 8px;font-size:0.8rem;}
+}
 .result-modal-footer{padding:15px 25px;border-top:2px solid var(--border);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;}
 
 /* ===========================
@@ -2381,12 +2401,20 @@ function openResultPopup(results,time){
   const table=document.getElementById("resultModalTable");
   const subtitle=document.getElementById("resultModalSubtitle");
 
-  // Header Row
-  let html=`<tr><th>Sr No</th><th>CNIC</th><th>Name</th><th>Contact</th><th>Branch Name</th><th>Branch Code</th><th>Batch</th></tr>`;
-  // Result Rows
-  results.forEach((r,i)=>{
-    html+=`<tr style="animation-delay:${i*0.05}s"><td>${r[0]||"-"}</td><td>${r[1]||"-"}</td><td>${r[2]||"-"}</td><td>${r[3]||"-"}</td><td>${r[4]||"-"}</td><td>${r[5]||"-"}</td><td>${r[6]||"-"}</td></tr>`;
+  const labels=['Sr No','CNIC','Name','Contact','Branch Name','Branch Code','Batch'];
+
+  // Header Row — first cell blank, then one column per result
+  let html='<tr><th>Field</th>';
+  results.forEach((r,i)=>{html+=`<th>Result ${i+1}</th>`;});
+  html+='</tr>';
+
+  // Result Rows — each row is one field, transposed across all results
+  labels.forEach((label,idx)=>{
+    html+=`<tr><td><strong>${label}</strong></td>`;
+    results.forEach(r=>{html+=`<td>${r[idx]||"-"}</td>`;});
+    html+='</tr>';
   });
+
   table.innerHTML=html;
 
   subtitle.textContent=time!==undefined
