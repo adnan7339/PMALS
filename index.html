@@ -281,30 +281,6 @@ h1{color:#ffffff;font-size:2.8rem;font-weight:800;margin-bottom:10px;text-shadow
 /* Search */
 .card-title{color:var(--navy);font-size:1.6rem;font-weight:800;margin-bottom:25px;display:flex;align-items:center;gap:12px;}
 .card-title::before{content:'🔍';font-size:1.8rem;}
-
-/* ===== SOURCE TOGGLE (choose which sheet/database to search) ===== */
-.source-toggle-wrap{margin-bottom:20px;}
-.source-toggle-label{font-size:0.85rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:block;}
-.source-toggle{
-  display:inline-flex;background:var(--bg-light);border:2px solid var(--border);
-  border-radius:100px;padding:5px;gap:5px;position:relative;flex-wrap:wrap;
-}
-.source-toggle-btn{
-  border:none;background:transparent;cursor:pointer;font-family:inherit;
-  padding:11px 22px;border-radius:100px;font-weight:700;font-size:0.95rem;
-  color:var(--text-light);transition:all 0.3s;display:flex;align-items:center;gap:8px;white-space:nowrap;
-}
-.source-toggle-btn .src-count{
-  font-size:0.75rem;font-weight:600;padding:2px 8px;border-radius:100px;
-  background:rgba(0,61,130,0.08);color:var(--text-light);
-}
-.source-toggle-btn.active{
-  background:linear-gradient(135deg,var(--navy),var(--navy-light));
-  color:#fff;box-shadow:0 4px 16px rgba(0,61,130,0.35);
-}
-.source-toggle-btn.active .src-count{background:rgba(255,255,255,0.25);color:#fff;}
-.source-toggle-btn:hover:not(.active){color:var(--navy);background:rgba(0,61,130,0.06);}
-
 .search-box{display:flex;gap:15px;margin-bottom:20px;}
 .input-group{flex:1;}
 
@@ -407,6 +383,30 @@ td:nth-child(2){font-family:monospace;color:var(--navy-light);}
 .state h3{font-size:1.5rem;font-weight:800;color:var(--navy);margin-bottom:10px;}
 .state p{color:var(--text-light);font-size:1.05rem;}
 .loading-icon{width:70px;height:70px;border:5px solid var(--border);border-top-color:var(--navy);border-right-color:var(--gold);border-radius:50%;margin:0 auto 25px;animation:spin 1s linear infinite;}
+
+/* ===========================
+   RESULT POPUP MODAL
+   =========================== */
+.result-modal{
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.85);z-index:10500;
+  justify-content:center;align-items:center;padding:20px;
+}
+.result-modal.active{display:flex;}
+.result-modal-box{
+  background:white;border-radius:20px;width:100%;max-width:900px;
+  max-height:88vh;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 25px 70px rgba(0,0,0,0.55);animation:slideUp 0.4s ease;
+}
+.result-modal-header{
+  background:linear-gradient(135deg,var(--navy),var(--navy-dark));
+  padding:20px 25px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;
+}
+.result-modal-header h3{color:white;font-size:1.3rem;font-weight:800;}
+.result-modal-header p{color:var(--gold-light);font-size:0.85rem;margin-top:4px;}
+.result-modal-body{padding:0;overflow-y:auto;flex:1;}
+.result-modal-body .table-wrapper{border:none;border-radius:0;}
+.result-modal-footer{padding:15px 25px;border-top:2px solid var(--border);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;}
 
 /* ===========================
    ADMIN PANEL MODAL
@@ -1438,6 +1438,33 @@ td:nth-child(2){
   </div>
 </div>
 
+<!-- ===== SEARCH RESULT POPUP MODAL ===== -->
+<div class="result-modal" id="resultModal">
+  <div class="result-modal-box">
+    <div class="result-modal-header">
+      <div>
+        <h3>🔍 Search Results</h3>
+        <p id="resultModalSubtitle">0 record(s) found</p>
+      </div>
+      <button class="btn-close" onclick="closeResultPopup()">✕</button>
+    </div>
+    <div class="result-modal-body">
+      <div class="table-wrapper">
+        <table>
+          <tbody id="resultModalTable"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="result-modal-footer">
+      <button class="action-btn" onclick="copyResults()">📋 Copy</button>
+      <button class="action-btn" onclick="exportExcel()">📊 Excel</button>
+      <button class="action-btn" onclick="exportPDF()">📄 PDF</button>
+      <button class="action-btn" onclick="printResults()">🖨️ Print</button>
+      <button class="action-btn" onclick="closeResultPopup()">✅ Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== MAIN APP ===== -->
 <div class="container" id="mainApp">
 
@@ -1481,19 +1508,6 @@ td:nth-child(2){
 
   <div class="card">
     <h2 class="card-title">Search by CNIC</h2>
-
-    <div class="source-toggle-wrap">
-      <label class="source-toggle-label">Select Database</label>
-      <div class="source-toggle" id="sourceToggle">
-        <button type="button" class="source-toggle-btn active" id="srcBtn-s1" onclick="setActiveSource('s1')">
-          🗂️ 52052 Members <span class="src-count" id="srcCount-s1">…</span>
-        </button>
-        <button type="button" class="source-toggle-btn" id="srcBtn-s2" onclick="setActiveSource('s2')">
-          🗂️ 2667 Members <span class="src-count" id="srcCount-s2">…</span>
-        </button>
-      </div>
-    </div>
-
     <div class="search-box">
       <div class="input-group">
         <label>Enter CNIC Number</label>
@@ -1536,57 +1550,10 @@ td:nth-child(2){
 
 <script>
 // =============================================
-// CONFIG — Google Sheet links (both attached & loaded together)
+// CONFIG — Google Sheet link unchanged
 // =============================================
-const SHEET_ID = "1v9Y7EulDlF4xlsp_1WVsIsNeVWNrOEti"; // original sheet — unchanged
+const SHEET_ID = "1v9Y7EulDlF4xlsp_1WVsIsNeVWNrOEti";
 const SHEET_NAME = "Sheet1";
-
-const SHEET_ID_2 = "1aE2KEQdSu5CAEEOAn7_A4NVarlmZd08O"; // newly attached sheet
-const SHEET_NAME_2 = ""; // left blank on purpose -> uses the sheet's first/default tab
-
-// =============================================
-// DATA SOURCES — "52052 Members" (s1, original) + "2667 Members" (s2, new)
-// Both are fetched/cached at the same time; the toggle above the search box
-// just controls which one is currently being searched/displayed.
-// =============================================
-const SOURCES = {
-  s1: {
-    key: 's1',
-    label: '52052 Members',
-    sheetId: SHEET_ID,
-    sheetName: SHEET_NAME,
-    cacheKey: 'sheetData_s1',
-    cnicCol: 1, // row = [Sr No, CNIC, Name, Contact, Branch Name, Branch Code, Batch]
-    fields: [
-      {label:'Sr No',     get:(r,i)=>r[0]||(i+1)},
-      {label:'CNIC',      get:r=>r[1]||'-'},
-      {label:'Name',      get:r=>r[2]||'-'},
-      {label:'Contact',   get:r=>r[3]||'-'},
-      {label:'Branch Name',get:r=>r[4]||'-'},
-      {label:'Branch Code',get:r=>r[5]||'-'},
-      {label:'Batch',     get:r=>r[6]||'-'}
-    ]
-  },
-  s2: {
-    key: 's2',
-    label: '2667 Members',
-    sheetId: SHEET_ID_2,
-    sheetName: SHEET_NAME_2,
-    cacheKey: 'sheetData_s2',
-    cnicCol: 0, // row = [ApplicantCNIC, ApplicantName, Branch Code, Region, Area, Branch]
-    fields: [
-      {label:'Sr No',      get:(r,i)=>i+1},
-      {label:'CNIC',       get:r=>r[0]||'-'},
-      {label:'Name',       get:r=>r[1]||'-'},
-      {label:'Branch Code',get:r=>r[2]||'-'},
-      {label:'Region',     get:r=>r[3]||'-'},
-      {label:'Area',       get:r=>r[4]||'-'},
-      {label:'Branch',     get:r=>r[5]||'-'}
-    ]
-  }
-};
-let activeSource = 's1';
-function getActiveConfig(){ return SOURCES[activeSource]; }
 
 // =============================================
 // CENTRAL ACTIVITY LOG API (Google Apps Script Web App)
@@ -1634,7 +1601,8 @@ const DEVICE_LABEL = getDeviceLabel();
 // =============================================
 const DB_NAME = 'acag_cache_db';
 const DB_STORE = 'sheet_cache';
-const BACKGROUND_SYNC_INTERVAL = 5 * 60 * 1000; // re-check sheets every 5 min while app is open
+const CACHE_KEY = 'sheetData';
+const BACKGROUND_SYNC_INTERVAL = 5 * 60 * 1000; // re-check sheet every 5 min while app is open
 
 function openCacheDB(){
   return new Promise((resolve,reject)=>{
@@ -1648,13 +1616,13 @@ function openCacheDB(){
   });
 }
 
-async function getCachedSheetData(cacheKey){
+async function getCachedSheetData(){
   try{
     const db = await openCacheDB();
     return await new Promise((resolve,reject)=>{
       const tx = db.transaction(DB_STORE,'readonly');
       const store = tx.objectStore(DB_STORE);
-      const req = store.get(cacheKey);
+      const req = store.get(CACHE_KEY);
       req.onsuccess = ()=>resolve(req.result || null);
       req.onerror = ()=>reject(req.error);
     });
@@ -1664,13 +1632,13 @@ async function getCachedSheetData(cacheKey){
   }
 }
 
-async function setCachedSheetData(cacheKey, data){
+async function setCachedSheetData(data){
   try{
     const db = await openCacheDB();
     return await new Promise((resolve,reject)=>{
       const tx = db.transaction(DB_STORE,'readwrite');
       const store = tx.objectStore(DB_STORE);
-      const req = store.put({key:cacheKey, data, savedAt: Date.now()});
+      const req = store.put({key:CACHE_KEY, data, savedAt: Date.now()});
       req.onsuccess = ()=>resolve(true);
       req.onerror = ()=>reject(req.error);
     });
@@ -1766,9 +1734,8 @@ async function fetchServerActivity(){
 // =============================================
 // STATE
 // =============================================
-// Per-source data stores — both sheets are loaded/kept in memory at the same time
-let sheetDataMap = { s1: [], s2: [] };
-let readyMap = { s1: false, s2: false };
+let sheetData = [];
+let ready = false;
 let currentUser = null;
 let currentUserRole = null;
 let currentResults = [];
@@ -2237,10 +2204,8 @@ function parseCSV(csv){
   return rows;
 }
 
-async function fetchSheetCSV(sheetId, sheetName){
-  const url=sheetName
-    ? `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`
-    : `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+async function fetchSheetCSV(){
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
   const controller=new AbortController();
   const timeoutId=setTimeout(()=>controller.abort(),30000);
   try{
@@ -2253,46 +2218,7 @@ async function fetchSheetCSV(sheetId, sheetName){
   }
 }
 
-// Fetches ONE source fresh from the network and updates its cache + in-memory store
-async function fetchOneSourceFresh(srcKey){
-  const cfg=SOURCES[srcKey];
-  const csv=await fetchSheetCSV(cfg.sheetId, cfg.sheetName);
-  const rows=parseCSV(csv);
-  sheetDataMap[srcKey]=rows;
-  readyMap[srcKey]=true;
-  await setCachedSheetData(cfg.cacheKey, rows);
-  return rows.length-1;
-}
-
-function updateSourceCountBadge(srcKey){
-  const el=document.getElementById('srcCount-'+srcKey);
-  if(!el) return;
-  const rows=sheetDataMap[srcKey];
-  if(rows && rows.length){
-    el.textContent=(rows.length-1).toLocaleString();
-  }
-}
-
-function updateStatusUI(){
-  const badge=document.getElementById("statusBadge");
-  const info=document.getElementById("statusInfo");
-  const c1=sheetDataMap.s1.length?sheetDataMap.s1.length-1:0;
-  const c2=sheetDataMap.s2.length?sheetDataMap.s2.length-1:0;
-  if(readyMap.s1 && readyMap.s2){
-    badge.className="badge success";
-    badge.innerHTML='<span>✓</span><span>Connected</span>';
-    info.innerHTML=`<strong>52052 Members:</strong> ${c1.toLocaleString()} • <strong>2667 Members:</strong> ${c2.toLocaleString()} — both databases loaded`;
-    setTimeout(()=>{badge.innerHTML=`<span>✓</span><span>${(c1+c2).toLocaleString()} Records</span>`;},2000);
-  }else if(readyMap.s1 || readyMap.s2){
-    badge.className="badge loading";
-    badge.innerHTML='<span class="spinner"></span><span>Syncing</span>';
-    info.textContent="One database loaded, still connecting the other...";
-  }
-  updateSourceCountBadge('s1');
-  updateSourceCountBadge('s2');
-}
-
-// Loads BOTH sheets from the network in parallel and updates cache + UI
+// Loads data from the network and updates cache + UI
 async function fetchAndApplyFreshData(isBackground){
   const badge=document.getElementById("statusBadge");
   const info=document.getElementById("statusInfo");
@@ -2300,20 +2226,29 @@ async function fetchAndApplyFreshData(isBackground){
     if(!isBackground){
       badge.className="badge loading";
       badge.innerHTML='<span class="spinner"></span><span>Connecting</span>';
-      info.textContent="Connecting to Google Sheets (both databases)...";
+      info.textContent="Connecting to Google Sheets...";
     }
     const start=performance.now();
-    const results=await Promise.allSettled([fetchOneSourceFresh('s1'), fetchOneSourceFresh('s2')]);
+    const csv=await fetchSheetCSV();
+    if(!isBackground){
+      badge.innerHTML='<span class="spinner"></span><span>Processing</span>';
+      info.textContent="Processing data...";
+      await new Promise(r=>setTimeout(r,10));
+    }
+    const rows=parseCSV(csv);
     const time=Math.round(performance.now()-start);
-    const anySuccess=results.some(r=>r.status==='fulfilled');
-    if(!anySuccess) throw (results[0].reason||new Error("Connection failed"));
-    updateStatusUI();
-    const c1=sheetDataMap.s1.length?sheetDataMap.s1.length-1:0;
-    const c2=sheetDataMap.s2.length?sheetDataMap.s2.length-1:0;
+    sheetData=rows;
+    ready=true;
+    await setCachedSheetData(rows);
+    const count=sheetData.length-1;
+    badge.className="badge success";
+    badge.innerHTML='<span>✓</span><span>Connected</span>';
+    info.innerHTML=`<strong>${count.toLocaleString()}</strong> records ${isBackground?'synced':'loaded'} in <strong>${time}ms</strong>`;
+    setTimeout(()=>{badge.innerHTML=`<span>✓</span><span>${count.toLocaleString()} Records</span>`;},2000);
     if(isBackground){
-      logActivity('🔄',`Background sync: <strong>${c1.toLocaleString()}</strong> (52052 Members) + <strong>${c2.toLocaleString()}</strong> (2667 Members) records refreshed in <strong>${time}ms</strong>`);
+      logActivity('🔄',`Background sync: <strong>${count.toLocaleString()}</strong> records refreshed`);
     }else{
-      logActivity('📊',`Databases loaded: <strong>${c1.toLocaleString()}</strong> (52052 Members) + <strong>${c2.toLocaleString()}</strong> (2667 Members) records by <strong>${currentUser}</strong>`);
+      logActivity('📊',`Database loaded: <strong>${count.toLocaleString()}</strong> records by <strong>${currentUser}</strong>`);
     }
     return true;
   }catch(err){
@@ -2326,11 +2261,11 @@ async function fetchAndApplyFreshData(isBackground){
     if(err.name==='AbortError'){
       badge.innerHTML='<span>⚠</span><span>Timeout</span>';
       info.textContent="Connection timed out after 30 seconds.";
-      alert('❌ Connection Timeout\n\nPlease check:\n1. Internet connection\n2. Google Sheets links are accessible\n3. Try again in a few moments');
+      alert('❌ Connection Timeout\n\nPlease check:\n1. Internet connection\n2. Google Sheets link is accessible\n3. Try again in a few moments');
     }else{
       badge.innerHTML='<span>⚠</span><span>Failed</span>';
       info.textContent="Connection failed. Please refresh.";
-      alert('❌ Failed to connect to database\n\nPlease check:\n1. Both Google Sheets are shared (Anyone with link can view)\n2. Internet connection\n3. Sheet IDs are correct');
+      alert('❌ Failed to connect to database\n\nPlease check:\n1. Google Sheet is shared (Anyone with link can view)\n2. Internet connection\n3. Sheet ID is correct');
     }
     return false;
   }
@@ -2345,37 +2280,28 @@ function startBackgroundSync(){
 async function loadData(){
   const badge=document.getElementById("statusBadge");
   const info=document.getElementById("statusInfo");
-  const [cached1, cached2]=await Promise.all([
-    getCachedSheetData(SOURCES.s1.cacheKey),
-    getCachedSheetData(SOURCES.s2.cacheKey)
-  ]);
-  const hasCache1=cached1 && cached1.data && cached1.data.length;
-  const hasCache2=cached2 && cached2.data && cached2.data.length;
-
-  if(hasCache1 || hasCache2){
+  const cached=await getCachedSheetData();
+  if(cached && cached.data && cached.data.length){
     // Instant load from cache — no waiting, no reconnecting
-    if(hasCache1){ sheetDataMap.s1=cached1.data; readyMap.s1=true; }
-    if(hasCache2){ sheetDataMap.s2=cached2.data; readyMap.s2=true; }
-    const oldestSave=Math.min(...[hasCache1?cached1.savedAt:Infinity, hasCache2?cached2.savedAt:Infinity]);
-    const ageMins=Math.round((Date.now()-oldestSave)/60000);
-    const c1=sheetDataMap.s1.length?sheetDataMap.s1.length-1:0;
-    const c2=sheetDataMap.s2.length?sheetDataMap.s2.length-1:0;
+    sheetData=cached.data;
+    ready=true;
+    const count=sheetData.length-1;
+    const ageMins=Math.round((Date.now()-cached.savedAt)/60000);
     badge.className="badge success";
     badge.innerHTML='<span>✓</span><span>Connected</span>';
-    info.innerHTML=`<strong>52052 Members:</strong> ${c1.toLocaleString()} • <strong>2667 Members:</strong> ${c2.toLocaleString()} loaded instantly from cache (${ageMins<1?'just now':ageMins+' min ago'})`;
-    updateSourceCountBadge('s1');updateSourceCountBadge('s2');
-    setTimeout(()=>{badge.innerHTML=`<span>✓</span><span>${(c1+c2).toLocaleString()} Records</span>`;},2000);
-    logActivity('⚡',`Databases loaded from cache: <strong>${c1.toLocaleString()}</strong> (52052 Members) + <strong>${c2.toLocaleString()}</strong> (2667 Members) records by <strong>${currentUser}</strong>`);
+    info.innerHTML=`<strong>${count.toLocaleString()}</strong> records loaded instantly from cache (${ageMins<1?'just now':ageMins+' min ago'})`;
+    setTimeout(()=>{badge.innerHTML=`<span>✓</span><span>${count.toLocaleString()} Records</span>`;},2000);
+    logActivity('⚡',`Database loaded from cache: <strong>${count.toLocaleString()}</strong> records by <strong>${currentUser}</strong>`);
     // Quietly check for updates in the background, without blocking the UI
     fetchAndApplyFreshData(true);
   }else{
-    // First time ever (or cache cleared) — fetch both fresh, in parallel
+    // First time ever (or cache cleared) — fetch fresh from the sheet
     await fetchAndApplyFreshData(false);
   }
   startBackgroundSync();
 }
 
-// Manual "Refresh" button — forces a fresh pull of BOTH sheets from Google Sheets
+// Manual "Refresh" button — forces a fresh pull from Google Sheets
 async function forceRefreshData(){
   const btn=document.getElementById('refreshDataBtn');
   if(btn){btn.disabled=true;btn.textContent='🔄 Refreshing...';}
@@ -2384,30 +2310,10 @@ async function forceRefreshData(){
 }
 
 // =============================================
-// SOURCE TOGGLE — switch which database is being searched/displayed
-// (both databases stay loaded in memory at the same time)
-// =============================================
-function setActiveSource(srcKey){
-  if(!SOURCES[srcKey] || activeSource===srcKey) { activeSource=srcKey; return; }
-  activeSource=srcKey;
-  document.querySelectorAll('.source-toggle-btn').forEach(b=>b.classList.remove('active'));
-  const btn=document.getElementById('srcBtn-'+srcKey);
-  if(btn) btn.classList.add('active');
-  // Reset the results panel for the newly selected database
-  currentResults=[];
-  const colspan=getActiveConfig().fields.length;
-  document.getElementById("results").innerHTML=`<tr><td colspan="${colspan}" class="state"><div class="state-icon">🔍</div><h3>Ready to Search</h3><p>Searching in: ${getActiveConfig().label}</p></td></tr>`;
-  document.getElementById("resultCount").textContent=`Ready to search — ${getActiveConfig().label}`;
-  document.getElementById("cnicInput").value="";
-  document.getElementById("cnicInput").focus();
-}
-
-// =============================================
 // SEARCH
 // =============================================
 function search(){
-  const cfg=getActiveConfig();
-  if(!readyMap[activeSource]){showError(`"${cfg.label}" database not loaded yet. Please wait...`);return;}
+  if(!ready){showError("Database not loaded. Please wait...");return;}
   const input=document.getElementById("cnicInput").value.trim();
   const btn=document.getElementById("searchBtn");
   const btnText=document.getElementById("btnText");
@@ -2420,22 +2326,22 @@ function search(){
       try{
         const start=performance.now();
         const results=[];
-        const rows=sheetDataMap[activeSource].slice(1);
+        const rows=sheetData.slice(1);
         for(let i=0;i<rows.length;i++){
-          const cell=rows[i][cfg.cnicCol];
-          const rowCnic=(cell||"").replace(/\D/g,"");
+          const rowCnic=rows[i][1].replace(/\D/g,"");
           if(rowCnic===cnic) results.push(rows[i]);
         }
         const time=Math.round(performance.now()-start);
         btn.disabled=false;btnText.textContent="🔍 Search";
         if(results.length===0){
-          alert(`❌ NO DATA FOUND\n\nThe CNIC you entered is not in the "${cfg.label}" database.`);
-          showNoResults();count.textContent=`No results found — ${cfg.label}`;
-          logActivity('🔍',`<strong>${currentUser}</strong> searched CNIC: ${input} in <strong>${cfg.label}</strong> — No results`);
+          alert('❌ NO DATA FOUND\n\nThe CNIC you entered is not in the database.');
+          showNoResults();count.textContent="No results found";
+          logActivity('🔍',`<strong>${currentUser}</strong> searched CNIC: ${input} — No results`);
         }else{
           currentResults=results;showResults(results);
-          count.textContent=`${results.length} record(s) found in ${time}ms — ${cfg.label}`;
-          logActivity('✅',`<strong>${currentUser}</strong> searched CNIC: ${input} in <strong>${cfg.label}</strong> — ${results.length} result(s) found`);
+          count.textContent=`${results.length} record(s) found in ${time}ms`;
+          openResultPopup(results,time);
+          logActivity('✅',`<strong>${currentUser}</strong> searched CNIC: ${input} — ${results.length} result(s) found`);
         }
       }catch(err){
         btn.disabled=false;btnText.textContent="🔍 Search";
@@ -2465,6 +2371,32 @@ function showResults(results){
     html+=`<tr style="animation-delay:${i*0.05}s"><td>${r[0]||"-"}</td><td>${r[1]||"-"}</td><td>${r[2]||"-"}</td><td>${r[3]||"-"}</td><td>${r[4]||"-"}</td><td>${r[5]||"-"}</td><td>${r[6]||"-"}</td></tr>`;
   });
   document.getElementById("results").innerHTML=html;
+}
+
+// =============================================
+// RESULT POPUP (shows Header Row + Result Rows)
+// =============================================
+function openResultPopup(results,time){
+  const modal=document.getElementById("resultModal");
+  const table=document.getElementById("resultModalTable");
+  const subtitle=document.getElementById("resultModalSubtitle");
+
+  // Header Row
+  let html=`<tr><th>Sr No</th><th>CNIC</th><th>Name</th><th>Contact</th><th>Branch Name</th><th>Branch Code</th><th>Batch</th></tr>`;
+  // Result Rows
+  results.forEach((r,i)=>{
+    html+=`<tr style="animation-delay:${i*0.05}s"><td>${r[0]||"-"}</td><td>${r[1]||"-"}</td><td>${r[2]||"-"}</td><td>${r[3]||"-"}</td><td>${r[4]||"-"}</td><td>${r[5]||"-"}</td><td>${r[6]||"-"}</td></tr>`;
+  });
+  table.innerHTML=html;
+
+  subtitle.textContent=time!==undefined
+    ? `${results.length} record(s) found in ${time}ms`
+    : `${results.length} record(s) found`;
+
+  modal.classList.add("active");
+}
+function closeResultPopup(){
+  document.getElementById("resultModal").classList.remove("active");
 }
 
 // =============================================
@@ -2534,10 +2466,21 @@ document.getElementById("cnicInput").addEventListener("input",e=>{
 document.getElementById("cnicInput").addEventListener("keypress",e=>{if(e.key==="Enter")search();});
 document.getElementById("cnicInput").addEventListener("keydown",e=>{
   if(e.key==="Escape"){
+    if(document.getElementById("resultModal").classList.contains("active")){
+      closeResultPopup();return;
+    }
     e.target.value="";e.target.focus();
     document.getElementById("results").innerHTML=`<tr><td colspan="7" class="state"><div class="state-icon">🔍</div><h3>Ready to Search</h3><p>Use any search method above</p></td></tr>`;
     document.getElementById("resultCount").textContent="Ready to search";
   }
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && document.getElementById("resultModal").classList.contains("active")){
+    closeResultPopup();
+  }
+});
+document.getElementById("resultModal").addEventListener("click",e=>{
+  if(e.target.id==="resultModal") closeResultPopup();
 });
 </script>
 </body>
