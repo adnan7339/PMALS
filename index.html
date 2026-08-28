@@ -243,6 +243,41 @@ h1{color:#ffffff;font-size:2.8rem;font-weight:800;margin-bottom:10px;text-shadow
   margin-bottom:25px;border:1px solid rgba(197,157,95,0.15);
   position:relative;animation:slideUp 0.6s ease backwards;
 }
+
+/* ===== REGISTRATION LINKS (ACAG Portal) ===== */
+.bottomLinks{
+  display:flex;flex-wrap:wrap;align-items:stretch;
+  gap:20px;margin-bottom:25px;
+  animation:slideUp 0.6s ease backwards;
+}
+.module-wrapper{
+  display:flex;flex-wrap:wrap;gap:20px;flex:1 1 480px;
+}
+.module-card{
+  flex:1 1 260px;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:22px 26px;border-radius:20px;text-decoration:none;color:#fff;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  transition:transform 0.25s ease,box-shadow 0.25s ease;
+}
+.module-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.35);}
+.module-card.blue{background:linear-gradient(135deg,var(--navy),var(--navy-dark));}
+.module-card.green{background:linear-gradient(135deg,var(--success),#1f9c46);}
+.module-title{font-weight:700;font-size:1.05rem;line-height:1.45;}
+.module-title span{display:block;font-weight:500;font-size:0.85rem;opacity:0.9;margin-top:4px;}
+.module-card .arrow{flex-shrink:0;display:flex;}
+.module-card .arrow svg{width:24px;height:24px;stroke:#fff;}
+.toll-free{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  padding:14px 24px;border-radius:100px;border:1px solid rgba(255,255,255,0.25);
+  color:#fff;font-weight:800;font-size:1.05rem;letter-spacing:0.5px;
+}
+.toll-free-logo{width:26px;height:26px;object-fit:contain;}
+@media(max-width:768px){
+  .bottomLinks{flex-direction:column;}
+  .module-wrapper{flex-direction:column;}
+  .toll-free{justify-content:center;}
+}
 .card:nth-child(3){animation-delay:0.1s;}
 .card:nth-child(4){animation-delay:0.2s;}
 .card:nth-child(5){animation-delay:0.3s;}
@@ -1506,6 +1541,39 @@ td:nth-child(2){
     <div class="logo">🔍</div>
     <h1>Apni Chhat Mehfooz Chhat Member Search</h1>
     <p class="subtitle">Advanced Database Search System</p>
+  </div>
+
+  <div class="bottomLinks">
+      <div class="module-wrapper">
+          <a class="module-card blue" href="https://acag.punjab.gov.pk/Layouts/Registration.aspx?LoanCategoryID=0" target="_blank" rel="noopener" aria-label="Apni Chhat Apna Ghar">
+            <div class="module-title">Apni Chhat Apna Ghar
+                <br>
+                <span>Apply for Construction of New House</span>
+            </div>
+            <div class="arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </div>
+          </a>
+          <a class="module-card green" href="https://acag.punjab.gov.pk/Layouts/LoanCategory.aspx" target="_blank" rel="noopener" aria-label="Apna Ghar, Mehfooz Ghar">
+            <div class="module-title">Apni Chhat Mehfooz Chhat
+                <br>
+                <span>Apply for Addition of New Floor/Room</span>
+            </div>
+            <div class="arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </div>
+          </a>
+      </div>
+      <div class="toll-free">
+          <img class="toll-free-logo" src="https://acag.punjab.gov.pk/images/toll-free.png" alt="Toll Free">
+          <span>0800-09100</span>
+      </div>
   </div>
 
   <div class="card">
