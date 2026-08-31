@@ -896,6 +896,61 @@ button.search-btn::before{
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:linear-gradient(135deg,var(--navy),var(--gold));border-radius:5px;}
 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg,var(--gold),var(--navy));}
+
+/* ===== TOP NAV TABS ===== */
+.site-nav{
+  display:flex;
+  justify-content:center;
+  margin-bottom:24px;
+  animation:slideDown 0.6s ease;
+}
+.site-nav-inner{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  background:rgba(10,20,45,0.55);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:100px;
+  padding:10px;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.15),0 8px 24px rgba(0,0,0,0.35);
+}
+.site-nav-inner a{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 22px;
+  border-radius:100px;
+  font-weight:700;
+  font-size:0.92rem;
+  text-decoration:none;
+  color:#ffffff;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.25);
+  white-space:nowrap;
+  transition:all 0.3s;
+}
+.site-nav-inner a:hover{
+  background:rgba(255,255,255,0.28);
+  border-color:rgba(255,255,255,0.5);
+  transform:translateY(-1px);
+}
+.site-nav-inner a.active{
+  background:linear-gradient(135deg,var(--navy),var(--navy-light));
+  border-color:transparent;
+  color:#fff;
+  box-shadow:0 4px 18px rgba(10,132,255,0.6);
+  cursor:default;
+}
+.site-nav-inner a .nav-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:currentColor;opacity:0.8;
+}
+@media(max-width:600px){
+  .site-nav-inner{width:100%;justify-content:center;}
+  .site-nav-inner a{padding:9px 16px;font-size:0.85rem;}
+}
 </style>
 
 <style id="akhuwat-login-theme">
@@ -1578,43 +1633,18 @@ td:nth-child(2){
     </div>
   </div>
 
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="site-nav-inner">
+      <a href="#" class="active" aria-current="page"><span class="nav-dot"></span>ACAG/ACMC Registration</a>
+      <a href="https://pmybls-black.vercel.app/index.htm">PM Youth List</a>
+      <a href="https://live-owndata.vercel.app/">ACAG List</a>
+    </div>
+  </nav>
+
   <div class="header">
     <div class="logo">🔍</div>
     <h1>Apni Chhat Mehfooz Chhat Member Search</h1>
     <p class="subtitle">Advanced Database Search System</p>
-  </div>
-
-  <div class="bottomLinks">
-      <div class="module-wrapper">
-          <a class="module-card blue" href="https://acag.punjab.gov.pk/Layouts/Registration.aspx?LoanCategoryID=0" target="_blank" rel="noopener" aria-label="Apni Chhat Apna Ghar">
-            <div class="module-title">Apni Chhat Apna Ghar
-                <br>
-                <span>Apply for Construction of New House</span>
-            </div>
-            <div class="arrow" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14"></path>
-                <path d="m13 6 6 6-6 6"></path>
-              </svg>
-            </div>
-          </a>
-          <a class="module-card green" href="https://acag.punjab.gov.pk/Layouts/LoanCategory.aspx" target="_blank" rel="noopener" aria-label="Apna Ghar, Mehfooz Ghar">
-            <div class="module-title">Apni Chhat Mehfooz Chhat
-                <br>
-                <span>Apply for Addition of New Floor/Room</span>
-            </div>
-            <div class="arrow" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14"></path>
-                <path d="m13 6 6 6-6 6"></path>
-              </svg>
-            </div>
-          </a>
-      </div>
-      <div class="toll-free">
-          <img class="toll-free-logo" src="https://acag.punjab.gov.pk/images/toll-free.png" alt="Toll Free">
-          <span>0800-09100</span>
-      </div>
   </div>
 
   <div class="card">
