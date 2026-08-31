@@ -293,6 +293,38 @@ h1{color:#ffffff;font-size:2.8rem;font-weight:800;margin-bottom:10px;text-shadow
 @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:520px){.stats-grid{grid-template-columns:1fr;}}
 
+/* Mobile: footer stats become round; desktop stays as-is */
+@media(max-width:520px){
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+    justify-items:center;
+  }
+  .stats-card{
+    width:100%;
+    max-width:150px;
+    aspect-ratio:1/1;
+    min-height:0;
+    border-radius:50%;
+    padding:16px;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:6px;
+  }
+  .stats-card .card-header{
+    justify-content:center;
+    width:100%;
+  }
+  .stats-card .bottomIcon{display:none;}
+  .stats-card .icon-wrap{width:36px;height:36px;}
+  .stats-card .card-body{width:100%;}
+  .stats-card .card-sub-details{display:flex;flex-direction:column;align-items:center;}
+  .stats-card .card-sub-details .value{font-size:1.05rem;}
+  .stats-card .money-value{justify-content:center;}
+  .stats-card .card-title{font-size:0.62rem;margin-top:2px;}
+}
+
 .stats-card{
   position:relative;overflow:hidden;border-radius:18px;padding:22px;
   color:#fff;min-height:140px;display:flex;flex-direction:column;justify-content:space-between;
